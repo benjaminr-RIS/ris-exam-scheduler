@@ -678,12 +678,12 @@
         "IB_SPECIAL-17-6"
       ],
       "slotProctorCount": {
-        "IB_SPECIAL-6-1": 1,
+        "IB_SPECIAL-6-1": 4,
         "IB_SPECIAL-6-2": 1,
         "IB_SPECIAL-6-3": 1,
         "IB_SPECIAL-5-5": 1,
         "IB_SPECIAL-0-6": 1,
-        "IB_SPECIAL-1-1": 4,
+        "IB_SPECIAL-1-1": 1,
         "IB_SPECIAL-1-2": 1,
         "IB_SPECIAL-1-3": 1,
         "IB_SPECIAL-2-5": 1,
@@ -697,8 +697,8 @@
         "IB_SPECIAL-5-6": 2,
         "IB_SPECIAL-5-7": 2,
         "IB_SPECIAL-6-5": 1,
-        "IB_SPECIAL-8-6": 1,
-        "IB_SPECIAL-8-7": 1,
+        "IB_SPECIAL-8-6": 2,
+        "IB_SPECIAL-8-7": 2,
         "IB_SPECIAL-9-1": 1,
         "IB_SPECIAL-9-2": 1,
         "IB_SPECIAL-9-3": 1,
@@ -1002,9 +1002,7 @@
         "IB_SPECIAL-9-2": "M",
         "IB_SPECIAL-9-1": "M",
         "IB_SPECIAL-9-3": "M",
-        "IB_SPECIAL-9-4": "M",
-        "IB_SPECIAL-8-6": "M",
-        "IB_SPECIAL-8-7": "M"
+        "IB_SPECIAL-9-4": "M"
       },
       "slotMergeDown": [
         "IB_SPECIAL-5-5",
@@ -1022,15 +1020,12 @@
         "IB_SPECIAL-9-2": [],
         "IB_SPECIAL-9-1": [],
         "IB_SPECIAL-9-3": [],
-        "IB_SPECIAL-9-4": [],
-        "IB_SPECIAL-8-6": [],
-        "IB_SPECIAL-1-1": []
+        "IB_SPECIAL-9-4": []
       },
       "specialAssignments": {
         "IB_SPECIAL-3-5": [],
         "IB_SPECIAL-3-7": [],
-        "IB_SPECIAL-6-5": [],
-        "IB_SPECIAL-8-7": []
+        "IB_SPECIAL-6-5": []
       },
       "manualAssignments": {}
     },
