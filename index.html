@@ -30,7 +30,7 @@
         .buttons { display: flex; flex-direction: column; gap: 10px; }
         .btn-primary, .btn-secondary, .btn-danger { 
             width: 100%; padding: 14px 24px; border: none; border-radius: 6px; cursor: pointer; 
-            font-size: 14px; font-weight: 600; transition: all 0.2s; text-align: center;
+            font-size: 14px; font-weight: 600; transition: all 0.2s; text-align: left; padding-left: 20px;
         }
         .btn-primary { background: #3498db; color: white; }
         .btn-primary:hover { background: #2980b9; }
@@ -247,13 +247,11 @@
                             <button class="btn-secondary" onclick="exportAvailabilityMatrixPDF()"><i class="fa-solid fa-calendar-days fa-btn-icon"></i> Export Availability Matrix</button>
                             <button class="btn-secondary" onclick="exportPDF()"><i class="fa-solid fa-file-pdf fa-btn-icon"></i> Export Teacher Schedules</button>
                             <button class="btn-secondary" onclick="exportTimetablePDF()"><i class="fa-solid fa-table-list fa-btn-icon"></i> Export Exam Timetables</button>
-                            <button class="btn-secondary" onclick="showAvailabilityReport()"><i class="fa-solid fa-chart-bar fa-btn-icon"></i> Availability</button>
                             <button class="btn-secondary" onclick="exportState()"><i class="fa-solid fa-floppy-disk fa-btn-icon"></i> Export</button>
                             <button class="btn-secondary" onclick="importState()"><i class="fa-solid fa-folder-open fa-btn-icon"></i> Import State</button>
-                            <button class="btn-secondary" onclick="githubSaveJSON()" id="ghJsonBtn" style="background:#24292e;"><i class="fa-brands fa-github fa-btn-icon"></i> Save to GitHub</button>
-                            <button class="btn-secondary" onclick="showSaveHistory()" style="background:#2c3e50;"><i class="fa-solid fa-clock-rotate-left fa-btn-icon"></i> Save History</button>
-                            <button class="btn-secondary" onclick="showHistoryModal()" style="background:#2c3e50;"><i class="fa-solid fa-clock-rotate-left fa-btn-icon"></i> History</button>
                             <button class="btn-secondary" onclick="importTeacherAvailability()"><i class="fa-solid fa-user-plus fa-btn-icon"></i> Import Teacher</button>
+                            <button class="btn-secondary" onclick="githubSaveJSON()" id="ghJsonBtn" style="background:#24292e;text-align:left;padding-left:20px;"><i class="fa-brands fa-github fa-btn-icon"></i> Save to GitHub</button>
+                            <button class="btn-secondary" onclick="showSaveHistory()" style="background:#2c3e50;text-align:left;padding-left:20px;"><i class="fa-solid fa-clock-rotate-left fa-btn-icon"></i> Save History</button>
                             <button class="btn-secondary" onclick="clearAssignments()" style="background:#e67e22;"><i class="fa-solid fa-broom fa-btn-icon"></i> Clear Assignments</button>
                             <button class="btn-danger" onclick="clearAll()"><i class="fa-solid fa-trash fa-btn-icon"></i> Clear All Exams</button>
                         </div>
