@@ -3710,11 +3710,25 @@
                 bytes.forEach(b => binary += String.fromCharCode(b));
                 const b64  = btoa(binary);
 
-                const now  = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Bangkok', hour12: false });
-                const body = { message: `[RIS Scheduler] Save – ${now} ICT`, content: b64, branch: GH_BRANCH };
-                if (sha) body.sha = sha;
+                const now = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Bangkok', hour12: false });
 
-                const putRes = await fetch(API_URL, { method: 'PUT', headers, body: JSON.stringify(body) });
+                const doPut = async (useSha) => {
+                    const body = { message: `[RIS Scheduler] Save – ${now} ICT`, content: b64, branch: GH_BRANCH };
+                    if (useSha) body.sha = useSha;
+                    return fetch(API_URL, { method: 'PUT', headers, body: JSON.stringify(body) });
+                };
+
+                let putRes = await doPut(sha);
+
+                // SHA mismatch (409) — fetch a fresh SHA and retry once automatically
+                if (putRes.status === 409) {
+                    console.warn('SHA mismatch — fetching fresh SHA and retrying...');
+                    const retryGet = await fetch(API_URL + `?ref=${GH_BRANCH}`, { headers });
+                    if (retryGet.ok) {
+                        putRes = await doPut((await retryGet.json()).sha);
+                    }
+                }
+
                 if (!putRes.ok) {
                     const err = await putRes.json().catch(() => ({}));
                     if (putRes.status === 401 || putRes.status === 403) sessionStorage.removeItem(GH_TOKEN_KEY);
