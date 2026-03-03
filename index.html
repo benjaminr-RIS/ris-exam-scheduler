@@ -71,6 +71,35 @@
         .readonly-banner { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; 
                            padding: 10px 15px; font-size: 13px; color: #856404; margin-bottom: 15px; }
         .fa-btn-icon { margin-right: 6px; }
+        .btn-github { 
+            display: none; padding: 8px 16px; background: #24292e; color: white; 
+            border: none; border-radius: 8px; cursor: pointer; font-size: 13px; 
+            font-weight: 600; transition: all 0.2s; margin-left: 10px;
+        }
+        .btn-github:hover { background: #1a1f24; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .btn-github.saving { background: #f39c12; }
+        .btn-github.success { background: #27ae60; }
+        .btn-github.error { background: #e74c3c; }
+        .github-modal-overlay { 
+            position: fixed; top:0; left:0; right:0; bottom:0; 
+            background: rgba(0,0,0,0.65); display:flex; align-items:center; 
+            justify-content:center; z-index:99999; 
+        }
+        .github-modal { 
+            background: white; border-radius: 16px; padding: 32px; 
+            max-width: 480px; width: 92%; box-shadow: 0 12px 40px rgba(0,0,0,0.35); 
+        }
+        .github-modal h3 { color: #24292e; margin: 0 0 6px; font-size: 20px; }
+        .github-modal p { color: #6a737d; font-size: 13px; margin: 0 0 20px; line-height: 1.5; }
+        .github-modal label { display: block; font-size: 12px; font-weight: 700; color: #24292e; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .github-modal input { 
+            width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px; 
+            font-size: 14px; outline: none; margin-bottom: 14px; box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .github-modal input:focus { border-color: #24292e; }
+        .github-modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }
+        .github-modal .hint { font-size: 11px; color: #6a737d; margin-top: -10px; margin-bottom: 14px; }
     </style>
 </head>
 <body>
@@ -250,6 +279,7 @@
                             <button class="btn-secondary" onclick="showAvailabilityReport()"><i class="fa-solid fa-chart-bar fa-btn-icon"></i> Availability</button>
                             <button class="btn-secondary" onclick="exportState()"><i class="fa-solid fa-floppy-disk fa-btn-icon"></i> Export</button>
                             <button class="btn-secondary" onclick="importState()"><i class="fa-solid fa-folder-open fa-btn-icon"></i> Import State</button>
+                            <button class="btn-secondary" id="githubSaveBtn2" onclick="githubSave()" style="background:#24292e;"><i class="fa-brands fa-github fa-btn-icon"></i> Save to GitHub</button>
                             <button class="btn-secondary" onclick="importTeacherAvailability()"><i class="fa-solid fa-user-plus fa-btn-icon"></i> Import Teacher</button>
                             <button class="btn-secondary" onclick="clearAssignments()" style="background:#e67e22;"><i class="fa-solid fa-broom fa-btn-icon"></i> Clear Assignments</button>
                             <button class="btn-danger" onclick="clearAll()"><i class="fa-solid fa-trash fa-btn-icon"></i> Clear All Exams</button>
@@ -3571,6 +3601,222 @@
 
             doc.save('RIS_Teacher_Availability_Matrix.pdf');
         }
+
+        // ═══════════════════════════════════════════════
+        //  GITHUB INTEGRATION
+        // ═══════════════════════════════════════════════
+
+        const GH_CONFIG_KEY = 'risScheduler_githubConfig';
+
+        function getGithubConfig() {
+            try {
+                const raw = sessionStorage.getItem(GH_CONFIG_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch { return null; }
+        }
+
+        function saveGithubConfig(cfg) {
+            sessionStorage.setItem(GH_CONFIG_KEY, JSON.stringify(cfg));
+        }
+
+        function githubSave() {
+            const cfg = getGithubConfig();
+            if (!cfg || !cfg.token || !cfg.owner || !cfg.repo || !cfg.path) {
+                showGithubConfigModal(() => doGithubPush());
+            } else {
+                doGithubPush();
+            }
+        }
+
+        function showGithubConfigModal(onSave) {
+            const existing = getGithubConfig() || {};
+            const overlay = document.createElement('div');
+            overlay.className = 'github-modal-overlay';
+            overlay.id = 'ghConfigOverlay';
+            overlay.innerHTML = `
+                <div class="github-modal">
+                    <div style="font-size:36px;margin-bottom:10px;text-align:center;">
+                        <i class="fa-brands fa-github" style="color:#24292e;"></i>
+                    </div>
+                    <h3 style="text-align:center;">GitHub Connection</h3>
+                    <p style="text-align:center;">Enter your GitHub details once per session. Your token stays in memory only — never sent anywhere except GitHub's API.</p>
+
+                    <label>Personal Access Token (PAT)</label>
+                    <input id="gh_token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" value="${existing.token||''}">
+                    <div class="hint">Needs <strong>repo</strong> scope. <a href="https://github.com/settings/tokens/new" target="_blank" style="color:#0366d6;">Create one here ↗</a></div>
+
+                    <label>Repository Owner</label>
+                    <input id="gh_owner" type="text" placeholder="your-github-username" value="${existing.owner||''}">
+
+                    <label>Repository Name</label>
+                    <input id="gh_repo" type="text" placeholder="ris-exam-scheduler" value="${existing.repo||''}">
+
+                    <label>File Path in Repo</label>
+                    <input id="gh_path" type="text" placeholder="index.html" value="${existing.path||'index.html'}">
+                    <div class="hint" style="margin-top:-10px;margin-bottom:14px;">Path to the HTML file from the root of your repo, e.g. <code>docs/scheduler.html</code></div>
+
+                    <label>Branch</label>
+                    <input id="gh_branch" type="text" placeholder="main" value="${existing.branch||'main'}">
+
+                    <div id="ghConfigError" style="color:#e74c3c;font-size:13px;min-height:18px;margin-bottom:8px;"></div>
+
+                    <div class="modal-actions">
+                        <button onclick="document.getElementById('ghConfigOverlay').remove()"
+                            style="padding:10px 20px;background:#e8e8e8;color:#333;border:none;border-radius:8px;cursor:pointer;font-weight:600;">
+                            Cancel
+                        </button>
+                        <button onclick="submitGithubConfig()" id="ghConfigSaveBtn"
+                            style="padding:10px 24px;background:#24292e;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">
+                            <i class="fa-brands fa-github" style="margin-right:6px;"></i>Save &amp; Push
+                        </button>
+                    </div>
+                </div>`;
+            document.body.appendChild(overlay);
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+            setTimeout(() => {
+                const firstEmpty = ['gh_token','gh_owner','gh_repo','gh_path','gh_branch']
+                    .map(id => document.getElementById(id))
+                    .find(el => el && !el.value);
+                if (firstEmpty) firstEmpty.focus();
+            }, 50);
+            window._ghOnSave = onSave;
+        }
+
+        function submitGithubConfig() {
+            const token  = document.getElementById('gh_token')?.value?.trim();
+            const owner  = document.getElementById('gh_owner')?.value?.trim();
+            const repo   = document.getElementById('gh_repo')?.value?.trim();
+            const path   = document.getElementById('gh_path')?.value?.trim();
+            const branch = document.getElementById('gh_branch')?.value?.trim() || 'main';
+            const errEl  = document.getElementById('ghConfigError');
+
+            if (!token || !owner || !repo || !path) {
+                if (errEl) errEl.textContent = 'All fields except Branch are required.';
+                return;
+            }
+            saveGithubConfig({ token, owner, repo, path, branch });
+            document.getElementById('ghConfigOverlay')?.remove();
+            if (window._ghOnSave) window._ghOnSave();
+        }
+
+        async function doGithubPush() {
+            const cfg = getGithubConfig();
+            if (!cfg) return;
+
+            const btn = document.getElementById('githubSaveBtn2');
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin fa-btn-icon"></i>Pushing…';
+            btn.className = 'btn-github saving';
+            btn.disabled = true;
+
+            try {
+                const apiBase = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`;
+                const headers = {
+                    'Authorization': `Bearer ${cfg.token}`,
+                    'Accept': 'application/vnd.github+json',
+                    'X-GitHub-Api-Version': '2022-11-28'
+                };
+
+                // 1. Get current file SHA
+                const getRes = await fetch(`${apiBase}?ref=${cfg.branch}`, { headers });
+                if (!getRes.ok) {
+                    const errData = await getRes.json().catch(() => ({}));
+                    throw new Error(errData.message || `Failed to fetch file (${getRes.status}). Check owner/repo/path/branch.`);
+                }
+                const fileData = await getRes.json();
+                const sha = fileData.sha;
+
+                // 2. Read current HTML file content
+                const currentHTML = document.documentElement.outerHTML;
+
+                // 3. Base64 encode
+                const encoder = new TextEncoder();
+                const bytes = encoder.encode(currentHTML);
+                let binary = '';
+                bytes.forEach(b => binary += String.fromCharCode(b));
+                const b64 = btoa(binary);
+
+                // 4. Push update
+                const now = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Bangkok', hour12: false });
+                const putRes = await fetch(apiBase, {
+                    method: 'PUT',
+                    headers: { ...headers, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `[RIS Scheduler] Admin save – ${now} ICT`,
+                        content: b64,
+                        sha: sha,
+                        branch: cfg.branch
+                    })
+                });
+
+                if (!putRes.ok) {
+                    const errData = await putRes.json().catch(() => ({}));
+                    throw new Error(errData.message || `Push failed (${putRes.status})`);
+                }
+
+                const result = await putRes.json();
+                const commitUrl = result.commit?.html_url;
+
+                btn.innerHTML = '<i class="fa-solid fa-check fa-btn-icon"></i>Saved!';
+                btn.className = 'btn-github success';
+
+                // Show success toast
+                showGithubToast('success', `✓ Pushed to GitHub successfully!`, commitUrl);
+
+                setTimeout(() => {
+                    btn.innerHTML = origHTML;
+                    btn.className = 'btn-github';
+                    btn.disabled = false;
+                }, 3000);
+
+            } catch (err) {
+                console.error('GitHub push error:', err);
+                btn.innerHTML = '<i class="fa-solid fa-xmark fa-btn-icon"></i>Failed';
+                btn.className = 'btn-github error';
+
+                showGithubToast('error', `✗ ${err.message}`, null, true);
+
+                setTimeout(() => {
+                    btn.innerHTML = origHTML;
+                    btn.className = 'btn-github';
+                    btn.disabled = false;
+                }, 4000);
+            }
+        }
+
+        function showGithubToast(type, message, link, showConfig) {
+            const existing = document.getElementById('ghToast');
+            if (existing) existing.remove();
+
+            const bg = type === 'success' ? '#27ae60' : '#e74c3c';
+            const toast = document.createElement('div');
+            toast.id = 'ghToast';
+            toast.style.cssText = `
+                position:fixed; bottom:24px; right:24px; background:${bg}; color:white;
+                padding:14px 20px; border-radius:10px; font-size:14px; font-weight:600;
+                box-shadow:0 4px 16px rgba(0,0,0,0.25); z-index:999999; max-width:360px;
+                display:flex; flex-direction:column; gap:6px; animation: slideUp 0.3s ease;
+            `;
+            toast.innerHTML = `<div>${message}</div>`;
+            if (link) {
+                toast.innerHTML += `<a href="${link}" target="_blank" style="color:rgba(255,255,255,0.85);font-size:12px;font-weight:400;">View commit on GitHub ↗</a>`;
+            }
+            if (showConfig) {
+                toast.innerHTML += `<button onclick="showGithubConfigModal(()=>doGithubPush()); document.getElementById('ghToast')?.remove();" 
+                    style="background:rgba(255,255,255,0.2);border:none;color:white;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;margin-top:2px;">
+                    ⚙ Reconfigure GitHub Settings
+                </button>`;
+            }
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 7000);
+        }
+
+        // Allow reconfiguring GitHub from Admin tab area via keyboard shortcut Ctrl+Shift+G
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'G' && adminUnlocked) {
+                showGithubConfigModal(() => doGithubPush());
+            }
+        });
     </script>
 </body>
 </html>
