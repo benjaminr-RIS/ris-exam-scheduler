@@ -1028,12 +1028,6 @@
       "startDate": "2026-05-05T00:00:00.000Z",
       "endDate": "2026-05-23T00:00:00.000Z",
       "examSlots": [
-        "AP-1-0-0",
-        "AP-1-0-1",
-        "AP-1-0-2",
-        "AP-1-0-3",
-        "AP-1-0-4",
-        "AP-1-0-6",
         "AP-1-1-4",
         "AP-1-1-6",
         "AP-1-2-4",
@@ -1071,12 +1065,6 @@
         "AP-1-13-7"
       ],
       "slotProctorCount": {
-        "AP-1-0-0": 2,
-        "AP-1-0-1": 2,
-        "AP-1-0-2": 2,
-        "AP-1-0-3": 2,
-        "AP-1-0-4": 2,
-        "AP-1-0-6": 2,
         "AP-1-1-4": 2,
         "AP-1-1-6": 2,
         "AP-1-2-4": 2,
@@ -1114,12 +1102,6 @@
         "AP-1-13-7": 2
       },
       "slotExamNames": {
-        "AP-1-0-0": "AP Biology",
-        "AP-1-0-1": "AP Biology",
-        "AP-1-0-2": "AP Biology",
-        "AP-1-0-3": "AP Biology",
-        "AP-1-0-4": "AP Microeconomics",
-        "AP-1-0-6": "AP Microeconomics",
         "AP-1-1-4": "AP Human Geography",
         "AP-1-1-6": "AP Human Geography",
         "AP-1-2-4": "AP Physics 1",
@@ -1157,12 +1139,6 @@
         "AP-1-13-7": "AP Biology (Round 2)"
       },
       "slotTimes": {
-        "AP-1-0-0": "07:45",
-        "AP-1-0-1": "08:45",
-        "AP-1-0-2": "09:45",
-        "AP-1-0-3": "10:45",
-        "AP-1-0-4": "11:45",
-        "AP-1-0-6": "12:45",
         "AP-1-1-4": "11:45",
         "AP-1-1-6": "12:45",
         "AP-1-2-4": "11:45",
@@ -1200,12 +1176,6 @@
         "AP-1-13-7": "13:45"
       },
       "slotEndTimes": {
-        "AP-1-0-0": "08:45",
-        "AP-1-0-1": "09:45",
-        "AP-1-0-2": "10:45",
-        "AP-1-0-3": "11:45",
-        "AP-1-0-4": "12:45",
-        "AP-1-0-6": "13:45",
         "AP-1-1-4": "12:45",
         "AP-1-1-6": "14:10",
         "AP-1-2-4": "12:45",
@@ -1243,8 +1213,6 @@
         "AP-1-13-7": "15:15"
       },
       "slotNotes": {
-        "AP-1-0-0": "3:00+10=3:10h",
-        "AP-1-0-4": "2:10+10=2:20h",
         "AP-1-1-4": "2:15+10=2:25h",
         "AP-1-2-4": "3:00+10=3:10h",
         "AP-1-3-4": "3:00+10=3:10h",
@@ -1259,12 +1227,6 @@
         "AP-1-13-4": "3:00+10=3:10h"
       },
       "slotRoom": {
-        "AP-1-0-0": "H408",
-        "AP-1-0-1": "H408",
-        "AP-1-0-2": "H408",
-        "AP-1-0-3": "H408",
-        "AP-1-0-4": "H408",
-        "AP-1-0-6": "H408",
         "AP-1-1-4": "H408",
         "AP-1-1-6": "H408",
         "AP-1-2-4": "H408",
@@ -1302,12 +1264,6 @@
         "AP-1-13-7": "H408"
       },
       "slotStudents": {
-        "AP-1-0-0": 6,
-        "AP-1-0-1": 6,
-        "AP-1-0-2": 6,
-        "AP-1-0-3": 6,
-        "AP-1-0-4": 38,
-        "AP-1-0-6": 38,
         "AP-1-1-4": 18,
         "AP-1-1-6": 18,
         "AP-1-2-4": 34,
@@ -1378,7 +1334,7 @@
         "AP-2-1-0": 2,
         "AP-2-1-1": 2,
         "AP-2-1-2": 2,
-        "AP-2-1-3": 2,
+        "AP-2-1-3": 1,
         "AP-2-3-0": 2,
         "AP-2-3-1": 2,
         "AP-2-3-2": 2,
@@ -1506,23 +1462,43 @@
       "slotGenderReq": {},
       "slotMergeDown": [],
       "assignments": {},
-      "specialAssignments": {},
+      "specialAssignments": {
+        "AP-2-1-3": []
+      },
       "manualAssignments": {}
     },
     "AP-3": {
       "startDate": "2026-05-05T00:00:00.000Z",
       "endDate": "2026-05-23T00:00:00.000Z",
-      "examSlots": [],
-      "slotProctorCount": {},
-      "slotExamNames": {},
-      "slotTimes": {},
-      "slotEndTimes": {},
-      "slotNotes": {},
-      "slotRoom": {},
-      "slotStudents": {},
+      "examSlots": [
+        "AP-3-1-0"
+      ],
+      "slotProctorCount": {
+        "AP-3-1-0": 1
+      },
+      "slotExamNames": {
+        "AP-3-1-0": "AP Chemistry"
+      },
+      "slotTimes": {
+        "AP-3-1-0": "07:45"
+      },
+      "slotEndTimes": {
+        "AP-3-1-0": "08:45"
+      },
+      "slotNotes": {
+        "AP-3-1-0": "3:15+10=3:25h"
+      },
+      "slotRoom": {
+        "AP-3-1-0": "TBD"
+      },
+      "slotStudents": {
+        "AP-3-1-0": 1
+      },
       "slotGenderReq": {},
       "slotMergeDown": [],
-      "assignments": {},
+      "assignments": {
+        "AP-3-1-0": []
+      },
       "specialAssignments": {},
       "manualAssignments": {}
     },
