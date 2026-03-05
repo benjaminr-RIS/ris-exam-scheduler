@@ -2031,7 +2031,7 @@
             const LABEL_CLASS    = { text: 'CLASS',    color: [127, 140, 141] };
             const LABEL_ASSIGNED = { text: 'ASSIGNED', color: [39,  174, 96]  };
             const LABEL_LUNCH    = { text: 'LUNCH',    color: [211, 84,  0]   };
-            const LABEL_FLEX     = { text: 'FLEX',     color: [211, 84,  0]   };
+            const LABEL_FLEX     = { text: 'FLEX',     color: [127, 140, 141] };  // same as CLASS
             const LABEL_AFTER    = { text: 'AFTER',    color: [211, 84,  0]   };
 
             let globalPage = 1;
@@ -2110,8 +2110,8 @@
                         var rx = gridX + ci * cellW;
                         var ry = y;
                         if (isFlexRow) {
-                            doc.setFillColor(available ? 142 : 243, available ? 68 : 229, available ? 173 : 255);
-                            doc.setDrawColor(available ? 142 : 201, available ? 68 : 160, available ? 173 : 224);
+                            doc.setFillColor(available ? 39 : 245, available ? 174 : 246, available ? 96 : 250);
+                            doc.setDrawColor(available ? 39 : 200, available ? 174 : 200, available ? 96 : 200);
                         } else if (available) {
                             doc.setFillColor(39, 174, 96);
                             doc.setDrawColor(39, 174, 96);
@@ -2122,8 +2122,8 @@
                         doc.roundedRect(rx, ry, cellW - 1, cellH - 1, 1, 1, 'FD');
                         doc.setFont(undefined, available ? 'bold' : 'normal');
                         doc.setFontSize(7.5);
-                        var tc = available ? 255 : (isFlexRow ? 142 : 150);
-                        doc.setTextColor(tc, available ? 255 : (isFlexRow ? 68 : 150), available ? 255 : (isFlexRow ? 173 : 150));
+                        var tc = available ? 255 : 150;
+                        doc.setTextColor(tc, tc, tc);
                         doc.text(label, rx + (cellW - 1) / 2, ry + (cellH - 1) / 2 + 0.5, { align: 'center', baseline: 'middle' });
                     });
                     y += cellH;
@@ -2202,7 +2202,7 @@
                         const isLunch  = cycleBlock === 'LUNCH';
                         const isFlex   = (/^FLEX-/.test(cycleBlock));
                         const isAfter  = cycleBlock === 'After School';
-                        if (isRegularBlock && !commitments[cycleBlock]) return;
+                        if ((isRegularBlock || isFlex) && !commitments[cycleBlock]) return;
                         availableExams.push({
                             date, dateKey: formatDateKey(date), cycleBlock, periodIdx, typeName,
                             exam:      data.slotExamNames[slotId]  || '(unnamed)',
@@ -2243,7 +2243,6 @@
                         let lbl;
                         if (isAssigned)    lbl = LABEL_ASSIGNED;
                         else if (ae.isLunch)  lbl = LABEL_LUNCH;
-                        else if (ae.isFlex)   lbl = LABEL_FLEX;
                         else if (ae.isAfter)  lbl = LABEL_AFTER;
                         else               lbl = LABEL_CLASS;
                         y = drawExamRow(y, lbl.text, lbl.color,
@@ -2700,8 +2699,14 @@
                     if (!schedule) return;
                     const cycleBlock = schedule[periodIdx];
 
-                    if (!cycleBlock || (cycleBlock.length !== 2 && cycleBlock !== 'After School') || (cycleBlock.length === 2 && !AVAIL_CYCLES.includes(cycleBlock[0]))) return;
-                    if (!availSelectedBlocks.has(cycleBlock)) return;
+                    // Valid blocks: regular (A1-D5), FLEX-X, LUNCH, After School
+                    const isRegularCB = /^[ABCD][12345]$/.test(cycleBlock);
+                    const isFlexCB    = /^FLEX-[ABCD]$/.test(cycleBlock);
+                    const isLunchCB   = cycleBlock === 'LUNCH';
+                    const isAfterCB   = cycleBlock === 'After School';
+                    if (!isRegularCB && !isFlexCB && !isLunchCB && !isAfterCB) return;
+                    // For regular and FLEX blocks, teacher must have it marked available
+                    if ((isRegularCB || isFlexCB) && !availSelectedBlocks.has(cycleBlock)) return;
 
                     // Respect the "available from" date — skip exams before that date
                     const availFrom = availSelectedBlocks.get(cycleBlock);
@@ -3155,7 +3160,7 @@
                         const isLunch  = cycleBlock === 'LUNCH';
                         const isFlex   = (/^FLEX-/.test(cycleBlock));
                         const isAfter  = cycleBlock === 'After School';
-                        if (isRegularBlock && !commitments[cycleBlock]) return;
+                        if ((isRegularBlock || isFlex) && !commitments[cycleBlock]) return;
                         availableExams.push({
                             date, periodIdx, examType: et, typeName, cycleBlock,
                             isLunch, isFlex, isAfter, isRegularBlock,
@@ -3200,7 +3205,6 @@
                         let blockLabel;
                         if (isAssigned)                       blockLabel = '✓ ASSIGNED';
                         else if (ae.isLunch)                  blockLabel = 'LUNCH';
-                        else if (ae.isFlex)                   blockLabel = 'FLEX';
                         else if (ae.isAfter)                  blockLabel = 'AFTER';
                         else                                  blockLabel = 'AVAILABLE';
                         html += `<tr style="background:${bg};border-bottom:1px solid #f0f0f0;">
@@ -3295,7 +3299,7 @@
                         var proctors = map[slotId];
                         if (!proctors || !proctors.includes(teacher.id)) return;
                         var parts = slotId.split('-');
-                        var dateIdx = parseInt(parts[1]), periodIdx = parseInt(parts[2]);
+                    var dateIdx = parseInt(parts[parts.length - 2]), periodIdx = parseInt(parts[2]);
                         var date = data.dates[dateIdx];
                         if (!date) return;
                         var block = getCycleBlockForSlot(dateIdx, periodIdx, examType);
@@ -3324,7 +3328,7 @@
                 var d = examData[et];
                 d.examSlots.forEach(function(slotId) {
                     var parts = slotId.split('-');
-                    var dateIdx = parseInt(parts[1]), periodIdx = parseInt(parts[2]);
+                    var dateIdx = parseInt(parts[parts.length - 2]), periodIdx = parseInt(parts[parts.length - 1]);
                     var date = d.dates[dateIdx];
                     if (!date) return;
                     var schedule = getScheduleForDate(date);
@@ -3332,7 +3336,7 @@
                     var cycleBlock = schedule[periodIdx];
                     if (!cycleBlock) return;
                     var isRegularBlock = /^[ABCD][12345]$/.test(cycleBlock);
-                    if (isRegularBlock && !commitments[cycleBlock]) return;
+                    if ((isRegularBlock || isFlex) && !commitments[cycleBlock]) return;
                     var isLunch = cycleBlock === 'LUNCH', isFlex = (/^FLEX-/.test(cycleBlock)), isAfter = cycleBlock === 'After School';
                     availableExams.push({
                         date, periodIdx, examType: et, cycleBlock, isLunch, isFlex, isAfter, isRegularBlock,
@@ -3661,8 +3665,6 @@
                 });
 
                 // Grid cells — rows: 1,2,3,4,FLEX,5
-                var PURPLE = [142, 68, 173];
-                var PURPLE_LIGHT = [243, 229, 255];
                 MATRIX_ROWS.forEach(function(blockNum, row) {
                     var isFlexRow = blockNum === 'FLEX';
                     var ry = GRID_TOP + row * CELL_H;
@@ -3671,21 +3673,13 @@
                         var label   = isFlexRow ? ('Flex-' + cycle) : blockId;
                         var avail   = !!(commitments[blockId]);
                         var cx      = GRID_LEFT + col * CELL_W;
-                        if (isFlexRow) {
-                            setFill(avail ? PURPLE : PURPLE_LIGHT);
-                        } else {
-                            setFill(avail ? GREEN : WHITE);
-                        }
+                        setFill(avail ? GREEN : WHITE);
                         doc.rect(cx, ry, CELL_W, CELL_H, 'F');
                         setDraw(BLACK); doc.setLineWidth(0.4);
                         doc.rect(cx, ry, CELL_W, CELL_H, 'S');
                         doc.setFont(undefined, 'bold');
                         doc.setFontSize(isFlexRow ? 11 : 14);
-                        if (isFlexRow) {
-                            setTxt(avail ? WHITE : PURPLE);
-                        } else {
-                            setTxt(avail ? WHITE : [180, 188, 195]);
-                        }
+                        setTxt(avail ? WHITE : [180, 188, 195]);
                         doc.text(label, cx + CELL_W / 2, ry + CELL_H / 2 + (isFlexRow ? 1.8 : 2.5), { align: 'center' });
                     });
                 });
@@ -3731,9 +3725,7 @@
                     var mid    = ry + ROW_H / 2;
 
                     // Row background: purple tint for FLEX, alternating grey/white otherwise
-                    if (isFlexRow) {
-                        setFill(avail ? [232, 210, 255] : [248, 240, 255]);
-                    } else if (i % 2 === 0) {
+                    if (i % 2 === 0) {
                         setFill([250, 251, 252]);
                     } else {
                         setFill(WHITE);
@@ -3753,7 +3745,7 @@
                     var displayLabel = isFlexRow ? ('Flex-' + blockId.slice(5)) : blockId;
                     var cycle = blockId[isFlexRow ? 5 : 0];
                     var cycleColors = { A: [180,60,60], B: [30,110,180], C: [30,140,80], D: [130,60,180] };
-                    var cc = isFlexRow ? [142, 68, 173] : (cycleColors[cycle] || TEXT_DARK);
+                    var cc = cycleColors[cycle] || TEXT_DARK;
                     doc.setFont(undefined, 'bold'); doc.setFontSize(isFlexRow ? 7 : 8);
                     setTxt(cc);
                     doc.text(displayLabel, COL_BLOCK.x + COL_BLOCK.w / 2, mid + 1.5, { align: 'center' });
