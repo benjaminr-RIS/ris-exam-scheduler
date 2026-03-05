@@ -2932,9 +2932,9 @@
                     examData[examType].slotStudents      = d.slotStudents || {};
                     examData[examType].slotGenderReq     = d.slotGenderReq || {};
                     examData[examType].slotMergeDown     = new Set(d.slotMergeDown || []);
-                    examData[examType].assignments       = d.assignments;
-                    examData[examType].specialAssignments = d.specialAssignments;
-                    examData[examType].manualAssignments  = d.manualAssignments || {};
+                    examData[examType].assignments       = {};
+                    examData[examType].specialAssignments = {};
+                    examData[examType].manualAssignments  = {};
                 });
             } catch(e) { console.error('Hardcoded state load failed:', e); }
         })();
