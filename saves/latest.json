@@ -1022,9 +1022,7 @@
         "IB_SPECIAL-0-5"
       ],
       "assignments": {},
-      "specialAssignments": {
-        "IB_SPECIAL-0-5": []
-      },
+      "specialAssignments": {},
       "manualAssignments": {}
     },
     "AP-1": {
@@ -1465,9 +1463,7 @@
       "slotGenderReq": {},
       "slotMergeDown": [],
       "assignments": {},
-      "specialAssignments": {
-        "AP-2-1-3": []
-      },
+      "specialAssignments": {},
       "manualAssignments": {}
     },
     "AP-3": {
@@ -1531,15 +1527,8 @@
       },
       "slotGenderReq": {},
       "slotMergeDown": [],
-      "assignments": {
-        "AP-3-1-0": [],
-        "AP-3-1-1": [],
-        "AP-3-1-2": [],
-        "AP-3-1-4": []
-      },
-      "specialAssignments": {
-        "AP-3-1-3": []
-      },
+      "assignments": {},
+      "specialAssignments": {},
       "manualAssignments": {}
     },
     "AP-4": {
@@ -2329,33 +2318,33 @@
   },
   "schedulerSettings": {
     "IB": {
-      "lunch": true,
+      "lunch": false,
       "flex": true,
       "after": false
     },
     "IB_SPECIAL": {
-      "lunch": true,
+      "lunch": false,
       "flex": true,
       "after": false
     },
     "AP-1": {
       "lunch": false,
-      "flex": false,
+      "flex": true,
       "after": false
     },
     "AP-2": {
       "lunch": false,
-      "flex": false,
+      "flex": true,
       "after": false
     },
     "AP-3": {
       "lunch": false,
-      "flex": false,
+      "flex": true,
       "after": false
     },
     "AP-4": {
       "lunch": false,
-      "flex": false,
+      "flex": true,
       "after": false
     }
   }
