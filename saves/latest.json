@@ -172,8 +172,8 @@
         "IB-2-7": "Business Management SL/HL",
         "IB-3-1": "Business Management SL/HL",
         "IB-3-2": "Business Management SL/HL",
-        "IB-3-5": "Computer Science (Paper 1)",
-        "IB-3-6": "Computer Science (Paper 1)",
+        "IB-3-5": "Computer Science SL (Paper 1)",
+        "IB-3-6": "Computer Science SL (Paper 1)",
         "IB-5-1": "Computer Science SL (Paper 2)",
         "IB-5-2": "Computer Science SL (Paper 2)",
         "IB-5-5": "History HL/SL (Papers 1&2)",
@@ -613,12 +613,14 @@
       ],
       "assignments": {
         "IB-1-2": [],
-        "IB-2-6": []
+        "IB-2-6": [],
+        "IB-3-6": []
       },
       "specialAssignments": {
         "IB-2-5": [],
         "IB-2-7": [],
-        "IB-2-8": []
+        "IB-2-8": [],
+        "IB-3-5": []
       },
       "manualAssignments": {}
     },
