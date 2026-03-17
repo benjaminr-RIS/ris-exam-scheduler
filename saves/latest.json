@@ -615,12 +615,22 @@
         "IB-7-6": "MF",
         "IB-6-7": "MF",
         "IB-6-6": "MF",
-        "IB-6-5": "MF"
+        "IB-6-5": "MF",
+        "IB-8-1": "MF",
+        "IB-8-2": "MF",
+        "IB-8-3": "MF",
+        "IB-8-4": "MF",
+        "IB-8-5": "MF",
+        "IB-8-6": "MF",
+        "IB-8-7": "MF",
+        "IB-9-1": "MF",
+        "IB-9-2": "MF"
       },
       "slotMergeDown": [
         "IB-2-3",
         "IB-3-2",
-        "IB-6-3"
+        "IB-6-3",
+        "IB-7-6"
       ],
       "assignments": {
         "IB-1-2": [],
@@ -634,7 +644,13 @@
         "IB-7-1": [],
         "IB-7-2": [],
         "IB-7-6": [],
-        "IB-6-6": []
+        "IB-6-6": [],
+        "IB-8-1": [],
+        "IB-8-2": [],
+        "IB-8-4": [],
+        "IB-8-6": [],
+        "IB-9-1": [],
+        "IB-9-2": []
       },
       "specialAssignments": {
         "IB-2-5": [],
@@ -645,7 +661,10 @@
         "IB-6-3": [],
         "IB-7-5": [],
         "IB-6-7": [],
-        "IB-6-5": []
+        "IB-6-5": [],
+        "IB-8-3": [],
+        "IB-8-5": [],
+        "IB-8-7": []
       },
       "manualAssignments": {
         "IB-5-1": [
@@ -1037,10 +1056,10 @@
         "IB_SPECIAL-3-3": "M",
         "IB_SPECIAL-3-5": "M",
         "IB_SPECIAL-3-7": "M",
-        "IB_SPECIAL-9-1": "M",
-        "IB_SPECIAL-9-2": "M",
-        "IB_SPECIAL-9-3": "M",
-        "IB_SPECIAL-9-4": "M",
+        "IB_SPECIAL-9-1": "MF",
+        "IB_SPECIAL-9-2": "MF",
+        "IB_SPECIAL-9-3": "MF",
+        "IB_SPECIAL-9-4": "MF",
         "IB_SPECIAL-6-5": "M",
         "IB_SPECIAL-8-6": "M",
         "IB_SPECIAL-8-7": "M",
@@ -1080,7 +1099,10 @@
         "IB_SPECIAL-3-2": [],
         "IB_SPECIAL-5-2": [],
         "IB_SPECIAL-5-1": [],
-        "IB_SPECIAL-5-6": []
+        "IB_SPECIAL-5-6": [],
+        "IB_SPECIAL-9-1": [],
+        "IB_SPECIAL-9-2": [],
+        "IB_SPECIAL-9-4": []
       },
       "specialAssignments": {
         "IB_SPECIAL-0-5": [],
@@ -1089,7 +1111,8 @@
         "IB_SPECIAL-3-3": [],
         "IB_SPECIAL-5-5": [],
         "IB_SPECIAL-5-7": [],
-        "IB_SPECIAL-6-3": []
+        "IB_SPECIAL-6-3": [],
+        "IB_SPECIAL-9-3": []
       },
       "manualAssignments": {}
     },
