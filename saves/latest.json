@@ -1022,7 +1022,9 @@
         "IB_SPECIAL-0-5"
       ],
       "assignments": {},
-      "specialAssignments": {},
+      "specialAssignments": {
+        "IB_SPECIAL-0-5": []
+      },
       "manualAssignments": {}
     },
     "AP-1": {
