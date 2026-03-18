@@ -746,7 +746,7 @@
                     const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
                     const startBlock = RIS_CYCLE_CALENDAR[dateKey] || 'TBD';
                     const headerStyle = startBlock === '?' ? 'opacity:0.5;' : '';
-                    html += `<div class="day-header" style="grid-column:${i+2}; grid-row:1; ${headerStyle}">${dayName}<br>${date.getMonth()+1}/${date.getDate()}<br><small>${startBlock === '?' ? 'No School' : startBlock}</small></div>`;
+                    html += `<div class="day-header" style="grid-column:${i+2}; grid-row:1; ${headerStyle}">${dayName}<br>${date.getDate()}/${date.getMonth()+1}<br><small>${startBlock === '?' ? 'No School' : startBlock}</small></div>`;
                 });
                 
                 // Fill remaining columns
@@ -991,7 +991,16 @@
             const available = [];
             const unavailable = [];
             const genderFiltered = [];
-            eligibleTeachers.forEach(t => {
+
+            // Always include the currently-assigned teacher even if outside program/gender filter
+            const eligibleIds = new Set(eligibleTeachers.map(t => t.id));
+            const teacherList = [...eligibleTeachers];
+            if (selectedId && !eligibleIds.has(selectedId)) {
+                const assignedTeacher = TEACHERS.find(t => t.id === selectedId);
+                if (assignedTeacher) teacherList.push(assignedTeacher);
+            }
+
+            teacherList.forEach(t => {
                 // If gender requirement set and teacher doesn't match, put in genderFiltered
                 // 'MF' means 1 of each — show all teachers, no filtering
                 if (genderReq && genderReq !== 'MF' && t.gender !== genderReq) {
@@ -1018,7 +1027,8 @@
 
             function makeOption(t, assigned, full, hasCommitment) {
                 let status = full ? ' — FULL' : ' — Available';
-                return `<option value="${t.id}" ${selectedId === t.id ? 'selected' : ''}>${t.name} (${assigned}/${t.required})${status}</option>`;
+                const outOfProgram = !eligibleIds.has(t.id) ? ' ⚠ cross-program' : '';
+                return `<option value="${t.id}" ${selectedId === t.id ? 'selected' : ''}>${t.name} (${assigned}/${t.required})${status}${outOfProgram}</option>`;
             }
 
             let html = '';
@@ -1685,10 +1695,11 @@
             const teacher = TEACHERS.find(t => t.id === teacherId);
             const isExisting = !!currentDate;
 
-            // Default: existing block → 2026-05-05, new → 2026-04-27
-            const defaultDateStr = isExisting
-                ? formatDateForInput(currentDate)
-                : '2026-04-27';
+            function toDisplayDate(d) {
+                return String(d.getDate()).padStart(2,'0') + '/' +
+                       String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+            }
+            const defaultDisplayStr = isExisting ? toDisplayDate(currentDate) : '27/04/2026';
 
             if (window.currentBlockAvailModal) window.currentBlockAvailModal.remove();
 
