@@ -3372,12 +3372,12 @@
   "schedulerSettings": {
     "IB_1": {
       "lunch": false,
-      "flex": false,
+      "flex": true,
       "after": false
     },
     "IB_2": {
       "lunch": false,
-      "flex": false,
+      "flex": true,
       "after": false
     },
     "IB_SPECIAL": {
