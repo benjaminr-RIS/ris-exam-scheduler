@@ -1312,8 +1312,6 @@
       "startDate": "2026-05-05T00:00:00.000Z",
       "endDate": "2026-05-23T00:00:00.000Z",
       "examSlots": [
-        "AP-1-1-4",
-        "AP-1-1-6",
         "AP-1-2-4",
         "AP-1-2-6",
         "AP-1-2-7",
@@ -1346,11 +1344,12 @@
         "AP-1-13-2",
         "AP-1-13-4",
         "AP-1-13-6",
-        "AP-1-13-7"
+        "AP-1-13-7",
+        "AP-1-1-0",
+        "AP-1-1-1",
+        "AP-1-1-2"
       ],
       "slotProctorCount": {
-        "AP-1-1-4": 2,
-        "AP-1-1-6": 2,
         "AP-1-2-4": 2,
         "AP-1-2-6": 2,
         "AP-1-2-7": 2,
@@ -1383,11 +1382,12 @@
         "AP-1-13-2": 2,
         "AP-1-13-4": 2,
         "AP-1-13-6": 2,
-        "AP-1-13-7": 2
+        "AP-1-13-7": 2,
+        "AP-1-1-0": 2,
+        "AP-1-1-1": 2,
+        "AP-1-1-2": 2
       },
       "slotExamNames": {
-        "AP-1-1-4": "AP Human Geography",
-        "AP-1-1-6": "AP Human Geography",
         "AP-1-2-4": "AP Physics 1",
         "AP-1-2-6": "AP Physics 1",
         "AP-1-2-7": "AP Physics 1",
@@ -1420,11 +1420,12 @@
         "AP-1-13-2": "AP Microeconomics (FD)",
         "AP-1-13-4": "AP Biology (Round 2)",
         "AP-1-13-6": "AP Biology (Round 2)",
-        "AP-1-13-7": "AP Biology (Round 2)"
+        "AP-1-13-7": "AP Biology (Round 2)",
+        "AP-1-1-0": "AP Human Geography",
+        "AP-1-1-1": "AP Human Geography",
+        "AP-1-1-2": "AP Human Geography"
       },
       "slotTimes": {
-        "AP-1-1-4": "11:45",
-        "AP-1-1-6": "12:45",
         "AP-1-2-4": "11:45",
         "AP-1-2-6": "12:45",
         "AP-1-2-7": "13:45",
@@ -1457,11 +1458,12 @@
         "AP-1-13-2": "09:45",
         "AP-1-13-4": "11:45",
         "AP-1-13-6": "12:45",
-        "AP-1-13-7": "13:45"
+        "AP-1-13-7": "13:45",
+        "AP-1-1-0": "07:45",
+        "AP-1-1-1": "08:50",
+        "AP-1-1-2": "09:55"
       },
       "slotEndTimes": {
-        "AP-1-1-4": "12:45",
-        "AP-1-1-6": "14:10",
         "AP-1-2-4": "12:45",
         "AP-1-2-6": "13:45",
         "AP-1-2-7": "15:30",
@@ -1494,10 +1496,12 @@
         "AP-1-13-2": "10:45",
         "AP-1-13-4": "12:45",
         "AP-1-13-6": "13:45",
-        "AP-1-13-7": "15:15"
+        "AP-1-13-7": "15:15",
+        "AP-1-1-0": "08:50",
+        "AP-1-1-1": "09:55",
+        "AP-1-1-2": "10:35"
       },
       "slotNotes": {
-        "AP-1-1-4": "2:15+10=2:25h",
         "AP-1-2-4": "3:00+10=3:10h",
         "AP-1-3-4": "3:00+10=3:10h",
         "AP-1-5-0": "3:15+10=3:25h",
@@ -1508,11 +1512,12 @@
         "AP-1-9-0": "2:40+10=2:50h",
         "AP-1-9-4": "3:00+10=3:10h",
         "AP-1-13-0": "2:10+10=2:20h",
-        "AP-1-13-4": "3:00+10=3:10h"
+        "AP-1-13-4": "3:00+10=3:10h",
+        "AP-1-1-0": "2:15+10=2:25h",
+        "AP-1-1-1": "2:15+10=2:25h",
+        "AP-1-1-2": "2:15+10=2:25h"
       },
       "slotRoom": {
-        "AP-1-1-4": "H408",
-        "AP-1-1-6": "H408",
         "AP-1-2-4": "H408",
         "AP-1-2-6": "H408",
         "AP-1-2-7": "H408",
@@ -1545,11 +1550,12 @@
         "AP-1-13-2": "H408",
         "AP-1-13-4": "H408",
         "AP-1-13-6": "H408",
-        "AP-1-13-7": "H408"
+        "AP-1-13-7": "H408",
+        "AP-1-1-0": "H408",
+        "AP-1-1-1": "H408",
+        "AP-1-1-2": "H408"
       },
       "slotStudents": {
-        "AP-1-1-4": 18,
-        "AP-1-1-6": 18,
         "AP-1-2-4": 34,
         "AP-1-2-6": 34,
         "AP-1-2-7": 34,
@@ -1582,11 +1588,18 @@
         "AP-1-13-2": 42,
         "AP-1-13-4": 23,
         "AP-1-13-6": 23,
-        "AP-1-13-7": 23
+        "AP-1-13-7": 23,
+        "AP-1-1-0": 18,
+        "AP-1-1-1": 18,
+        "AP-1-1-2": 18
       },
       "slotGenderReq": {},
       "slotMergeDown": [],
-      "assignments": {},
+      "assignments": {
+        "AP-1-1-0": [],
+        "AP-1-1-1": [],
+        "AP-1-1-2": []
+      },
       "specialAssignments": {},
       "manualAssignments": {}
     },
@@ -1618,7 +1631,7 @@
         "AP-2-1-0": 2,
         "AP-2-1-1": 2,
         "AP-2-1-2": 2,
-        "AP-2-1-3": 1,
+        "AP-2-1-3": 2,
         "AP-2-3-0": 2,
         "AP-2-3-1": 2,
         "AP-2-3-2": 2,
@@ -1658,9 +1671,9 @@
       },
       "slotTimes": {
         "AP-2-1-0": "07:45",
-        "AP-2-1-1": "08:45",
-        "AP-2-1-2": "09:45",
-        "AP-2-1-3": "10:45",
+        "AP-2-1-1": "08:50",
+        "AP-2-1-2": "09:55",
+        "AP-2-1-3": "10:55",
         "AP-2-3-0": "07:45",
         "AP-2-3-1": "08:45",
         "AP-2-3-2": "09:45",
@@ -1678,9 +1691,9 @@
         "AP-2-8-7": "13:45"
       },
       "slotEndTimes": {
-        "AP-2-1-0": "08:45",
-        "AP-2-1-1": "09:45",
-        "AP-2-1-2": "10:45",
+        "AP-2-1-0": "08:50",
+        "AP-2-1-1": "09:55",
+        "AP-2-1-2": "10:55",
         "AP-2-1-3": "11:45",
         "AP-2-3-0": "08:45",
         "AP-2-3-1": "09:45",
@@ -1699,11 +1712,14 @@
         "AP-2-8-7": "15:30"
       },
       "slotNotes": {
-        "AP-2-1-0": "3:15+10=3:25h",
+        "AP-2-1-0": "3:15+10=3:25h\nHybrid",
         "AP-2-3-0": "3:15+10=3:25h",
         "AP-2-4-4": "2:00+10=2:10h",
         "AP-2-4-5": "2:10+10=2:20h",
-        "AP-2-8-4": "3:00+10=3:10h"
+        "AP-2-8-4": "3:00+10=3:10h",
+        "AP-2-1-1": "3:15+10=3:25h\nHybrid",
+        "AP-2-1-2": "3:15+10=3:25h\nHybrid",
+        "AP-2-1-3": "3:15+10=3:25h\nHybrid"
       },
       "slotRoom": {
         "AP-2-1-0": "TBD",
@@ -1745,8 +1761,14 @@
       },
       "slotGenderReq": {},
       "slotMergeDown": [],
-      "assignments": {},
-      "specialAssignments": {},
+      "assignments": {
+        "AP-2-1-0": [],
+        "AP-2-1-1": [],
+        "AP-2-1-2": []
+      },
+      "specialAssignments": {
+        "AP-2-1-3": []
+      },
       "manualAssignments": {}
     },
     "AP-3": {
@@ -1757,78 +1779,142 @@
         "AP-3-1-1",
         "AP-3-1-2",
         "AP-3-1-3",
-        "AP-3-1-4"
+        "AP-3-1-4",
+        "AP-3-1-5"
       ],
       "slotProctorCount": {
         "AP-3-1-0": 1,
         "AP-3-1-1": 1,
         "AP-3-1-2": 1,
         "AP-3-1-3": 1,
-        "AP-3-1-4": 1
+        "AP-3-1-4": 1,
+        "AP-3-1-5": 1
       },
       "slotExamNames": {
         "AP-3-1-0": "AP Chemistry (Hybrid - Accomodations)",
         "AP-3-1-1": "AP Chemistry (Hybrid - Accomodations)",
         "AP-3-1-2": "AP Chemistry (Hybrid - Accomodations)",
         "AP-3-1-3": "AP Chemistry (Hybrid - Accomodations)",
-        "AP-3-1-4": "AP Chemistry (Hybrid - Accomodations)"
+        "AP-3-1-4": "AP Chemistry (Hybrid - Accomodations)",
+        "AP-3-1-5": "AP Chemistry (Hybrid - Accomodations)"
       },
       "slotTimes": {
         "AP-3-1-0": "07:45",
-        "AP-3-1-1": "08:55",
+        "AP-3-1-1": "08:50",
         "AP-3-1-2": "09:55",
         "AP-3-1-3": "10:55",
-        "AP-3-1-4": "11:40"
+        "AP-3-1-4": "11:40",
+        "AP-3-1-5": "10:55"
       },
       "slotEndTimes": {
-        "AP-3-1-0": "08:55",
+        "AP-3-1-0": "08:50",
         "AP-3-1-1": "09:55",
         "AP-3-1-2": "10:55",
-        "AP-3-1-3": "11:40",
-        "AP-3-1-4": "13:00"
+        "AP-3-1-3": "11:55",
+        "AP-3-1-4": "13:00",
+        "AP-3-1-5": "11:55"
       },
       "slotNotes": {
         "AP-3-1-0": "4:52+10=5:02\nPart 1: 1:30(standard\ntime) student can\nhave up to 2:15\nPart 2: 1:45(standard\ntime) student can\nhave up to 2:37\nStudent must stay\nfor standard time",
         "AP-3-1-1": "4:52+10=5:02\nPart 1: 1:30(standard\ntime) student can\nhave up to 2:15\nPart 2: 1:45(standard\ntime) student can\nhave up to 2:37\nStudent must stay\nfor standard time",
         "AP-3-1-2": "4:52+10=5:02\nPart 1: 1:30(standard\ntime) student can\nhave up to 2:15\nPart 2: 1:45(standard\ntime) student can\nhave up to 2:37\nStudent must stay\nfor standard time",
         "AP-3-1-3": "4:52+10=5:02\nPart 1: 1:30(standard\ntime) student can\nhave up to 2:15\nPart 2: 1:45(standard\ntime) student can\nhave up to 2:37\nStudent must stay\nfor standard time",
-        "AP-3-1-4": "4:52+10=5:02\nPart 1: 1:30(standard\ntime) student can\nhave up to 2:15\nPart 2: 1:45(standard\ntime) student can\nhave up to 2:37\nStudent must stay\nfor standard time"
+        "AP-3-1-4": "4:52+10=5:02\nPart 1: 1:30(standard\ntime) student can\nhave up to 2:15\nPart 2: 1:45(standard\ntime) student can\nhave up to 2:37\nStudent must stay\nfor standard time",
+        "AP-3-1-5": "4:52+10=5:02\nPart 1: 1:30(standard\ntime) student can\nhave up to 2:15\nPart 2: 1:45(standard\ntime) student can\nhave up to 2:37\nStudent must stay\nfor standard time"
       },
       "slotRoom": {
         "AP-3-1-0": "TBD",
         "AP-3-1-1": "TBD",
         "AP-3-1-2": "TBD",
         "AP-3-1-3": "TBD",
-        "AP-3-1-4": "TBD"
+        "AP-3-1-4": "TBD",
+        "AP-3-1-5": "TBD"
       },
       "slotStudents": {
         "AP-3-1-0": 1,
         "AP-3-1-1": 1,
         "AP-3-1-2": 1,
         "AP-3-1-3": 1,
-        "AP-3-1-4": 1
+        "AP-3-1-4": 1,
+        "AP-3-1-5": 1
       },
       "slotGenderReq": {},
-      "slotMergeDown": [],
-      "assignments": {},
-      "specialAssignments": {},
+      "slotMergeDown": [
+        "AP-3-1-3"
+      ],
+      "assignments": {
+        "AP-3-1-0": [],
+        "AP-3-1-1": []
+      },
+      "specialAssignments": {
+        "AP-3-1-3": [],
+        "AP-3-1-5": []
+      },
       "manualAssignments": {}
     },
     "AP-4": {
       "startDate": "2026-05-05T00:00:00.000Z",
       "endDate": "2026-05-23T00:00:00.000Z",
-      "examSlots": [],
-      "slotProctorCount": {},
-      "slotExamNames": {},
-      "slotTimes": {},
-      "slotEndTimes": {},
-      "slotNotes": {},
-      "slotRoom": {},
-      "slotStudents": {},
+      "examSlots": [
+        "AP-4-1-0",
+        "AP-4-1-1",
+        "AP-4-1-2",
+        "AP-4-1-3"
+      ],
+      "slotProctorCount": {
+        "AP-4-1-0": 1,
+        "AP-4-1-1": 1,
+        "AP-4-1-2": 1,
+        "AP-4-1-3": 1
+      },
+      "slotExamNames": {
+        "AP-4-1-0": "AP Human Geography",
+        "AP-4-1-1": "AP Human Geography",
+        "AP-4-1-2": "AP Human Geography",
+        "AP-4-1-3": "AP Human Geography"
+      },
+      "slotTimes": {
+        "AP-4-1-0": "07:45",
+        "AP-4-1-1": "08:50",
+        "AP-4-1-2": "09:55",
+        "AP-4-1-3": "10:55"
+      },
+      "slotEndTimes": {
+        "AP-4-1-0": "08:50",
+        "AP-4-1-1": "09:55",
+        "AP-4-1-2": "10:55",
+        "AP-4-1-3": "11:45"
+      },
+      "slotNotes": {
+        "AP-4-1-0": "1 Student\n?\n3:22+10=3:32\nPart 1: 1:00(standard time) student can have up to 1:30\nPart 2: 1:15(standard time) student can have up to 1:52\nStudent must use at least standard time",
+        "AP-4-1-1": "1 Student\n?\n3:22+10=3:32\nPart 1: 1:00(standard time) student can have up to 1:30\nPart 2: 1:15(standard time) student can have up to 1:52\nStudent must use at least standard time",
+        "AP-4-1-2": "1 Student\n?\n3:22+10=3:32\nPart 1: 1:00(standard time) student can have up to 1:30\nPart 2: 1:15(standard time) student can have up to 1:52\nStudent must use at least standard time",
+        "AP-4-1-3": "1 Student\n?\n3:22+10=3:32\nPart 1: 1:00(standard time) student can have up to 1:30\nPart 2: 1:15(standard time) student can have up to 1:52\nStudent must use at least standard time"
+      },
+      "slotRoom": {
+        "AP-4-1-0": "TBD",
+        "AP-4-1-1": "TBD",
+        "AP-4-1-2": "TBD",
+        "AP-4-1-3": "TBD"
+      },
+      "slotStudents": {
+        "AP-4-1-0": 1,
+        "AP-4-1-1": 1,
+        "AP-4-1-2": 1,
+        "AP-4-1-3": 1
+      },
       "slotGenderReq": {},
-      "slotMergeDown": [],
-      "assignments": {},
-      "specialAssignments": {},
+      "slotMergeDown": [
+        "AP-4-1-3"
+      ],
+      "assignments": {
+        "AP-4-1-0": [],
+        "AP-4-1-1": [],
+        "AP-4-1-2": []
+      },
+      "specialAssignments": {
+        "AP-4-1-3": []
+      },
       "manualAssignments": {}
     }
   },
