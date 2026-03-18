@@ -1649,25 +1649,7 @@
                     btn.title = hasCommitment ? ('Available from ' + formatDate(hasCommitment) + ' - Click to change') : 'Click to set availability';
                     btn.onclick = () => {
                         if (!adminUnlocked) { showPinModal(); return; }
-                        if (hasCommitment) {
-                            if (confirm(blockId + ': Change date or Remove?\n\nOK = Change date\nCancel = Remove')) {
-                                setBlockCommitment(teacher.id, blockId);
-                            } else {
-                                delete teacherBlockCommitments[teacher.id][blockId];
-                                generateTeacherCards();
-                                autoSave();
-                            }
-                        } else {
-                            const earliestDate = new Date(Math.min(
-                                examData.IB_1.startDate,
-                                examData.IB_SPECIAL.startDate,
-                                examData['AP-1'].startDate,
-                                examData['AP-2'].startDate
-                            ));
-                            teacherBlockCommitments[teacher.id][blockId] = earliestDate;
-                            generateTeacherCards();
-                            autoSave();
-                        }
+                        showBlockAvailabilityModal(teacher.id, blockId, hasCommitment ? hasCommitment : null);
                     };
                     return btn;
                 }
@@ -1699,23 +1681,117 @@
             return `${months[date.getMonth()]} ${date.getDate()}`;
         }
         
-        function setBlockCommitment(teacherId, blockId) {
+        function showBlockAvailabilityModal(teacherId, blockId, currentDate) {
             const teacher = TEACHERS.find(t => t.id === teacherId);
-            const currentDate = teacherBlockCommitments[teacherId][blockId];
-            
-            const dateStr = prompt(`When does ${teacher.name} become available for ${blockId} blocks?\n\nEnter date (YYYY-MM-DD):`, 
-                currentDate ? formatDateForInput(currentDate) : formatDateForInput(new Date('2026-04-20')));
-            
-            if (dateStr) {
-                const newDate = new Date(dateStr);
-                if (!isNaN(newDate.getTime())) {
-                    teacherBlockCommitments[teacherId][blockId] = newDate;
-                    generateTeacherCards();
-                    autoSave();
-                } else {
-                    alert('Invalid date format');
-                }
+            const isExisting = !!currentDate;
+
+            // Default: existing block → 2026-05-05, new → 2026-04-27
+            const defaultDateStr = isExisting
+                ? formatDateForInput(currentDate)
+                : '2026-04-27';
+
+            if (window.currentBlockAvailModal) window.currentBlockAvailModal.remove();
+
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);
+                display:flex;align-items:center;justify-content:center;z-index:10000;`;
+
+            const panel = document.createElement('div');
+            panel.style.cssText = `background:white;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.28);
+                max-width:420px;width:90%;overflow:hidden;`;
+
+            const teacherColor = teacher.color || '#3498db';
+
+            panel.innerHTML = `
+                <div style="padding:20px 24px 16px;border-bottom:1px solid #ecf0f1;display:flex;align-items:center;gap:10px;">
+                    <div style="width:4px;height:36px;background:${teacherColor};border-radius:2px;flex-shrink:0;"></div>
+                    <div>
+                        <div style="font-size:17px;font-weight:700;color:#2c3e50;">Block Availability</div>
+                        <div style="font-size:12px;color:#7f8c8d;margin-top:2px;">
+                            ${teacher.gender === 'M' ? '♂' : '♀'} <span style="color:${teacherColor};font-weight:600;">${teacher.name}</span>
+                            &nbsp;·&nbsp; Block <strong>${blockId}</strong>
+                        </div>
+                    </div>
+                    <button onclick="closeBlockAvailModal()" style="margin-left:auto;background:none;border:none;font-size:20px;
+                        color:#bdc3c7;cursor:pointer;line-height:1;padding:0 2px;" title="Close">×</button>
+                </div>
+                <div style="padding:20px 24px;">
+                    <div style="background:#f0f4ff;border:1px solid #d0d8f0;border-radius:8px;padding:11px 14px;
+                        font-size:12px;color:#34495e;margin-bottom:18px;line-height:1.5;">
+                        ${isExisting
+                            ? `<strong>Currently available from ${formatDate(currentDate)}.</strong><br>Update the date below or remove this availability.`
+                            : `<strong>${teacher.name}</strong> is not yet marked available for <strong>${blockId}</strong>.<br>Set a date from which they can proctor this block.`}
+                    </div>
+                    <label style="display:block;font-size:12px;font-weight:600;color:#2c3e50;margin-bottom:6px;">
+                        Available from:
+                    </label>
+                    <input type="date" id="blockAvailDateInput" value="${defaultDateStr}"
+                        style="width:100%;padding:10px 12px;border:2px solid #ddd;border-radius:8px;
+                        font-size:14px;color:#2c3e50;outline:none;transition:border 0.2s;"
+                        onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
+                    <div style="font-size:11px;color:#95a5a6;margin-top:5px;">
+                        Teacher will be eligible to proctor <strong>${blockId}</strong> from this date onward.
+                    </div>
+                </div>
+                <div style="padding:14px 24px 22px;border-top:1px solid #ecf0f1;display:flex;gap:8px;align-items:center;">
+                    ${isExisting ? `
+                    <button onclick="removeBlockAvail(${teacherId},'${blockId}')"
+                        style="padding:9px 16px;background:#fff0f0;color:#e74c3c;border:1.5px solid #e74c3c;
+                        border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.15s;"
+                        onmouseover="this.style.background='#fde8e8'" onmouseout="this.style.background='#fff0f0'">
+                        <i class="fas fa-trash-alt" style="margin-right:5px;font-size:11px;"></i>Remove
+                    </button>` : ''}
+                    <div style="flex:1;"></div>
+                    <button onclick="closeBlockAvailModal()"
+                        style="padding:9px 18px;background:#ecf0f1;color:#7f8c8d;border:none;border-radius:8px;
+                        cursor:pointer;font-size:13px;font-weight:600;">Cancel</button>
+                    <button onclick="confirmBlockAvail(${teacherId},'${blockId}')"
+                        style="padding:9px 20px;background:#3498db;color:white;border:none;border-radius:8px;
+                        cursor:pointer;font-size:13px;font-weight:600;transition:background 0.15s;"
+                        onmouseover="this.style.background='#2980b9'" onmouseout="this.style.background='#3498db'">
+                        <i class="fas fa-check" style="margin-right:5px;font-size:11px;"></i>Confirm
+                    </button>
+                </div>
+            `;
+
+            overlay.appendChild(panel);
+            document.body.appendChild(overlay);
+            window.currentBlockAvailModal = overlay;
+            overlay.addEventListener('click', e => { if (e.target === overlay) closeBlockAvailModal(); });
+            setTimeout(() => { const inp = document.getElementById('blockAvailDateInput'); if (inp) inp.focus(); }, 50);
+        }
+
+        function closeBlockAvailModal() {
+            if (window.currentBlockAvailModal) {
+                window.currentBlockAvailModal.remove();
+                window.currentBlockAvailModal = null;
             }
+        }
+
+        function confirmBlockAvail(teacherId, blockId) {
+            const inp = document.getElementById('blockAvailDateInput');
+            if (!inp) return;
+            const newDate = new Date(inp.value);
+            if (isNaN(newDate.getTime())) { inp.style.borderColor = '#e74c3c'; return; }
+            if (!teacherBlockCommitments[teacherId]) teacherBlockCommitments[teacherId] = {};
+            teacherBlockCommitments[teacherId][blockId] = newDate;
+            closeBlockAvailModal();
+            generateTeacherCards();
+            autoSave();
+        }
+
+        function removeBlockAvail(teacherId, blockId) {
+            if (teacherBlockCommitments[teacherId]) {
+                delete teacherBlockCommitments[teacherId][blockId];
+            }
+            closeBlockAvailModal();
+            generateTeacherCards();
+            autoSave();
+        }
+
+        function setBlockCommitment(teacherId, blockId) {
+            // legacy shim — now handled by showBlockAvailabilityModal
+            showBlockAvailabilityModal(teacherId, blockId, teacherBlockCommitments[teacherId]?.[blockId] || null);
         }
         
         function formatDateForInput(date) {
