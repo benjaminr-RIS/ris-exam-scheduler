@@ -1347,7 +1347,8 @@
         "AP-1-13-7",
         "AP-1-1-0",
         "AP-1-1-1",
-        "AP-1-1-2"
+        "AP-1-1-2",
+        "AP-1-2-5"
       ],
       "slotProctorCount": {
         "AP-1-2-4": 2,
@@ -1385,7 +1386,8 @@
         "AP-1-13-7": 2,
         "AP-1-1-0": 2,
         "AP-1-1-1": 2,
-        "AP-1-1-2": 2
+        "AP-1-1-2": 2,
+        "AP-1-2-5": 2
       },
       "slotExamNames": {
         "AP-1-2-4": "AP Physics 1",
@@ -1423,12 +1425,13 @@
         "AP-1-13-7": "AP Biology (Round 2)",
         "AP-1-1-0": "AP Human Geography",
         "AP-1-1-1": "AP Human Geography",
-        "AP-1-1-2": "AP Human Geography"
+        "AP-1-1-2": "AP Human Geography",
+        "AP-1-2-5": "AP Physics 1"
       },
       "slotTimes": {
         "AP-1-2-4": "11:45",
-        "AP-1-2-6": "12:45",
-        "AP-1-2-7": "13:45",
+        "AP-1-2-6": "13:35",
+        "AP-1-2-7": "14:45",
         "AP-1-3-4": "11:45",
         "AP-1-3-6": "12:45",
         "AP-1-3-7": "13:45",
@@ -1461,11 +1464,12 @@
         "AP-1-13-7": "13:45",
         "AP-1-1-0": "07:45",
         "AP-1-1-1": "08:50",
-        "AP-1-1-2": "09:55"
+        "AP-1-1-2": "09:55",
+        "AP-1-2-5": "12:40"
       },
       "slotEndTimes": {
-        "AP-1-2-4": "12:45",
-        "AP-1-2-6": "13:45",
+        "AP-1-2-4": "12:40",
+        "AP-1-2-6": "14:45",
         "AP-1-2-7": "15:30",
         "AP-1-3-4": "12:45",
         "AP-1-3-6": "13:45",
@@ -1499,7 +1503,8 @@
         "AP-1-13-7": "15:15",
         "AP-1-1-0": "08:50",
         "AP-1-1-1": "09:55",
-        "AP-1-1-2": "10:35"
+        "AP-1-1-2": "10:35",
+        "AP-1-2-5": "13:35"
       },
       "slotNotes": {
         "AP-1-2-4": "3:00+10=3:10h",
@@ -1515,7 +1520,10 @@
         "AP-1-13-4": "3:00+10=3:10h",
         "AP-1-1-0": "2:15+10=2:25h",
         "AP-1-1-1": "2:15+10=2:25h",
-        "AP-1-1-2": "2:15+10=2:25h"
+        "AP-1-1-2": "2:15+10=2:25h",
+        "AP-1-2-5": "3:00+10=3:10h",
+        "AP-1-2-6": "3:00+10=3:10h",
+        "AP-1-2-7": "3:00+10=3:10h"
       },
       "slotRoom": {
         "AP-1-2-4": "H408",
@@ -1553,7 +1561,8 @@
         "AP-1-13-7": "H408",
         "AP-1-1-0": "H408",
         "AP-1-1-1": "H408",
-        "AP-1-1-2": "H408"
+        "AP-1-1-2": "H408",
+        "AP-1-2-5": "H408"
       },
       "slotStudents": {
         "AP-1-2-4": 34,
@@ -1591,16 +1600,22 @@
         "AP-1-13-7": 23,
         "AP-1-1-0": 18,
         "AP-1-1-1": 18,
-        "AP-1-1-2": 18
+        "AP-1-1-2": 18,
+        "AP-1-2-5": 34
       },
       "slotGenderReq": {},
       "slotMergeDown": [],
       "assignments": {
         "AP-1-1-0": [],
         "AP-1-1-1": [],
-        "AP-1-1-2": []
+        "AP-1-1-2": [],
+        "AP-1-2-4": [],
+        "AP-1-2-6": []
       },
-      "specialAssignments": {},
+      "specialAssignments": {
+        "AP-1-2-5": [],
+        "AP-1-2-7": []
+      },
       "manualAssignments": {}
     },
     "AP-2": {
@@ -1625,7 +1640,11 @@
         "AP-2-8-3",
         "AP-2-8-4",
         "AP-2-8-6",
-        "AP-2-8-7"
+        "AP-2-8-7",
+        "AP-2-2-4",
+        "AP-2-2-5",
+        "AP-2-2-6",
+        "AP-2-2-7"
       ],
       "slotProctorCount": {
         "AP-2-1-0": 2,
@@ -1646,7 +1665,11 @@
         "AP-2-8-3": 2,
         "AP-2-8-4": 2,
         "AP-2-8-6": 2,
-        "AP-2-8-7": 2
+        "AP-2-8-7": 2,
+        "AP-2-2-4": 1,
+        "AP-2-2-5": 1,
+        "AP-2-2-6": 1,
+        "AP-2-2-7": 1
       },
       "slotExamNames": {
         "AP-2-1-0": "AP Chemistry",
@@ -1667,7 +1690,11 @@
         "AP-2-8-3": "AP Spanish Language & Culture",
         "AP-2-8-4": "AP Physics C: Electricity & Magnetism",
         "AP-2-8-6": "AP Physics C: Electricity & Magnetism",
-        "AP-2-8-7": "AP Physics C: Electricity & Magnetism"
+        "AP-2-8-7": "AP Physics C: Electricity & Magnetism",
+        "AP-2-2-4": "AP Physics 1",
+        "AP-2-2-5": "AP Physics 1",
+        "AP-2-2-6": "AP Physics 1",
+        "AP-2-2-7": "AP Physics 1"
       },
       "slotTimes": {
         "AP-2-1-0": "07:45",
@@ -1688,7 +1715,11 @@
         "AP-2-8-3": "10:45",
         "AP-2-8-4": "11:45",
         "AP-2-8-6": "12:45",
-        "AP-2-8-7": "13:45"
+        "AP-2-8-7": "13:45",
+        "AP-2-2-4": "11:45",
+        "AP-2-2-5": "12:40",
+        "AP-2-2-6": "13:35",
+        "AP-2-2-7": "14:45"
       },
       "slotEndTimes": {
         "AP-2-1-0": "08:50",
@@ -1709,7 +1740,11 @@
         "AP-2-8-3": "11:45",
         "AP-2-8-4": "12:45",
         "AP-2-8-6": "13:45",
-        "AP-2-8-7": "15:30"
+        "AP-2-8-7": "15:30",
+        "AP-2-2-4": "12:40",
+        "AP-2-2-5": "13:35",
+        "AP-2-2-6": "14:45",
+        "AP-2-2-7": "16:45"
       },
       "slotNotes": {
         "AP-2-1-0": "3:15+10=3:25h\nHybrid",
@@ -1719,7 +1754,11 @@
         "AP-2-8-4": "3:00+10=3:10h",
         "AP-2-1-1": "3:15+10=3:25h\nHybrid",
         "AP-2-1-2": "3:15+10=3:25h\nHybrid",
-        "AP-2-1-3": "3:15+10=3:25h\nHybrid"
+        "AP-2-1-3": "3:15+10=3:25h\nHybrid",
+        "AP-2-2-4": "1 student\n?\n4:30+10=4:40h\nPart 1: 1:20(standard time) student can have up to 2:00\nPart 2: 1:40(standard time) student can have up to 2:30\nStudent must use at least standard time",
+        "AP-2-2-5": "1 student\n?\n4:30+10=4:40h\nPart 1: 1:20(standard time) student can have up to 2:00\nPart 2: 1:40(standard time) student can have up to 2:30\nStudent must use at least standard time",
+        "AP-2-2-6": "1 student\n?\n4:30+10=4:40h\nPart 1: 1:20(standard time) student can have up to 2:00\nPart 2: 1:40(standard time) student can have up to 2:30\nStudent must use at least standard time",
+        "AP-2-2-7": "1 student\n?\n4:30+10=4:40h\nPart 1: 1:20(standard time) student can have up to 2:00\nPart 2: 1:40(standard time) student can have up to 2:30\nStudent must use at least standard time"
       },
       "slotRoom": {
         "AP-2-1-0": "TBD",
@@ -1740,7 +1779,11 @@
         "AP-2-8-3": "TBD",
         "AP-2-8-4": "TBD",
         "AP-2-8-6": "TBD",
-        "AP-2-8-7": "TBD"
+        "AP-2-8-7": "TBD",
+        "AP-2-2-4": "TBD",
+        "AP-2-2-5": "TBD",
+        "AP-2-2-6": "TBD",
+        "AP-2-2-7": "TBD"
       },
       "slotStudents": {
         "AP-2-1-0": 14,
@@ -1757,17 +1800,27 @@
         "AP-2-4-7": 48,
         "AP-2-8-4": 5,
         "AP-2-8-6": 5,
-        "AP-2-8-7": 5
+        "AP-2-8-7": 5,
+        "AP-2-2-4": 1,
+        "AP-2-2-5": 1,
+        "AP-2-2-6": 1,
+        "AP-2-2-7": 1
       },
       "slotGenderReq": {},
-      "slotMergeDown": [],
+      "slotMergeDown": [
+        "AP-2-2-7"
+      ],
       "assignments": {
         "AP-2-1-0": [],
         "AP-2-1-1": [],
-        "AP-2-1-2": []
+        "AP-2-1-2": [],
+        "AP-2-2-4": [],
+        "AP-2-2-6": []
       },
       "specialAssignments": {
-        "AP-2-1-3": []
+        "AP-2-1-3": [],
+        "AP-2-2-5": [],
+        "AP-2-2-7": []
       },
       "manualAssignments": {}
     },
