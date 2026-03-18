@@ -3371,37 +3371,37 @@
   },
   "schedulerSettings": {
     "IB_1": {
-      "lunch": false,
+      "lunch": true,
       "flex": true,
       "after": false
     },
     "IB_2": {
-      "lunch": false,
+      "lunch": true,
       "flex": true,
       "after": false
     },
     "IB_SPECIAL": {
-      "lunch": false,
+      "lunch": true,
       "flex": true,
       "after": false
     },
     "AP-1": {
-      "lunch": false,
+      "lunch": true,
       "flex": true,
       "after": false
     },
     "AP-2": {
-      "lunch": false,
+      "lunch": true,
       "flex": true,
       "after": false
     },
     "AP-3": {
-      "lunch": false,
+      "lunch": true,
       "flex": true,
       "after": false
     },
     "AP-4": {
-      "lunch": false,
+      "lunch": true,
       "flex": true,
       "after": false
     }
