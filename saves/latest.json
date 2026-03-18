@@ -624,7 +624,15 @@
         "IB_1-8-6": "MF",
         "IB_1-8-7": "MF",
         "IB_1-9-1": "MF",
-        "IB_1-9-2": "MF"
+        "IB_1-9-2": "MF",
+        "IB_1-10-5": "MF",
+        "IB_1-10-6": "MF",
+        "IB_1-10-7": "MF",
+        "IB_1-11-1": "MF",
+        "IB_1-11-2": "MF",
+        "IB_1-11-3": "MF",
+        "IB_1-11-5": "MF",
+        "IB_1-11-6": "MF"
       },
       "slotMergeDown": [
         "IB_1-2-3",
@@ -650,7 +658,11 @@
         "IB_1-8-4": [],
         "IB_1-8-6": [],
         "IB_1-9-1": [],
-        "IB_1-9-2": []
+        "IB_1-9-2": [],
+        "IB_1-10-6": [],
+        "IB_1-11-1": [],
+        "IB_1-11-2": [],
+        "IB_1-11-6": []
       },
       "specialAssignments": {
         "IB_1-2-5": [],
@@ -664,7 +676,11 @@
         "IB_1-6-5": [],
         "IB_1-8-3": [],
         "IB_1-8-5": [],
-        "IB_1-8-7": []
+        "IB_1-8-7": [],
+        "IB_1-10-5": [],
+        "IB_1-10-7": [],
+        "IB_1-11-3": [],
+        "IB_1-11-5": []
       },
       "manualAssignments": {
         "IB_1-5-1": [
@@ -774,7 +790,8 @@
         "IB_SPECIAL-0-5",
         "IB_SPECIAL-5-2",
         "IB_SPECIAL-9-2",
-        "IB_SPECIAL-9-1"
+        "IB_SPECIAL-9-1",
+        "IB_SPECIAL-11-4"
       ],
       "slotProctorCount": {
         "IB_SPECIAL-6-1": 1,
@@ -820,7 +837,8 @@
         "IB_SPECIAL-0-5": 1,
         "IB_SPECIAL-5-2": 1,
         "IB_SPECIAL-9-2": 2,
-        "IB_SPECIAL-9-1": 2
+        "IB_SPECIAL-9-1": 2,
+        "IB_SPECIAL-11-4": 1
       },
       "slotExamNames": {
         "IB_SPECIAL-6-1": "History HL (Paper 3)",
@@ -866,7 +884,8 @@
         "IB_SPECIAL-0-5": "Thai A Lang & Lit SL (Paper 1)",
         "IB_SPECIAL-5-2": "Computer Science SL (Paper 2)",
         "IB_SPECIAL-9-2": "English A Lit/Lang&Lit HL (Paper 2)",
-        "IB_SPECIAL-9-1": "English A Lit/Lang&Lit HL (Paper 2)"
+        "IB_SPECIAL-9-1": "English A Lit/Lang&Lit HL (Paper 2)",
+        "IB_SPECIAL-11-4": "Biology SL (Paper 2)"
       },
       "slotTimes": {
         "IB_SPECIAL-6-1": "09:20",
@@ -912,7 +931,8 @@
         "IB_SPECIAL-0-5": "13:20",
         "IB_SPECIAL-5-2": "10:00",
         "IB_SPECIAL-9-2": "09:55",
-        "IB_SPECIAL-9-1": "09:20"
+        "IB_SPECIAL-9-1": "09:20",
+        "IB_SPECIAL-11-4": "11:35"
       },
       "slotEndTimes": {
         "IB_SPECIAL-6-1": "09:55",
@@ -958,7 +978,8 @@
         "IB_SPECIAL-0-5": "15:00",
         "IB_SPECIAL-5-2": "11:00",
         "IB_SPECIAL-9-2": "11:00",
-        "IB_SPECIAL-9-1": "09:55"
+        "IB_SPECIAL-9-1": "09:55",
+        "IB_SPECIAL-11-4": "12:00"
       },
       "slotNotes": {
         "IB_SPECIAL-6-1": "225 paper\n5 reading\n5 instructions\n3h55min",
@@ -988,7 +1009,11 @@
         "IB_SPECIAL-0-5": "94 paper\n5 reading\n5 instructions\n1h34 min Must remain 2h",
         "IB_SPECIAL-5-2": "90 paper\n5 reading\n5 instructions\n1h40 min",
         "IB_SPECIAL-9-2": "158/132 paper\n5 reading\n5 instructions\n2h48 min",
-        "IB_SPECIAL-9-1": "158/132 paper\n5 reading\n5 instructions\n2h48 min"
+        "IB_SPECIAL-9-1": "158/132 paper\n5 reading\n5 instructions\n2h48 min",
+        "IB_SPECIAL-11-4": "135 paper\n5 reading\n5 instructions\n5 pre/post calculators\n2h30 min",
+        "IB_SPECIAL-11-3": "135 paper\n5 reading\n5 instructions\n5 pre/post calculators\n2h30 min",
+        "IB_SPECIAL-11-2": "135 paper\n5 reading\n5 instructions\n5 pre/post calculators\n2h30 min",
+        "IB_SPECIAL-11-7": "132 min\n5 reading\n5 instructions\n5 pre/post calculator\n2h27 min"
       },
       "slotRoom": {
         "IB_SPECIAL-6-1": "AD303/311b",
@@ -1034,7 +1059,8 @@
         "IB_SPECIAL-0-5": "AD303/311b",
         "IB_SPECIAL-5-2": "AD303/311b",
         "IB_SPECIAL-9-2": "AD303/311b",
-        "IB_SPECIAL-9-1": "AD303/311b"
+        "IB_SPECIAL-9-1": "AD303/311b",
+        "IB_SPECIAL-11-4": "AD303/311b"
       },
       "slotStudents": {
         "IB_SPECIAL-6-1": 1,
@@ -1080,7 +1106,8 @@
         "IB_SPECIAL-0-5": 1,
         "IB_SPECIAL-5-2": 2,
         "IB_SPECIAL-9-2": 2,
-        "IB_SPECIAL-9-1": 2
+        "IB_SPECIAL-9-1": 2,
+        "IB_SPECIAL-11-4": 1
       },
       "slotGenderReq": {
         "IB_SPECIAL-6-1": "M",
@@ -1124,7 +1151,8 @@
         "IB_SPECIAL-5-7": "M",
         "IB_SPECIAL-5-6": "M",
         "IB_SPECIAL-9-2": "MF",
-        "IB_SPECIAL-9-1": "MF"
+        "IB_SPECIAL-9-1": "MF",
+        "IB_SPECIAL-11-4": "M"
       },
       "slotMergeDown": [
         "IB_SPECIAL-2-5",
@@ -1141,7 +1169,10 @@
         "IB_SPECIAL-5-1": [],
         "IB_SPECIAL-5-6": [],
         "IB_SPECIAL-9-2": [],
-        "IB_SPECIAL-9-1": []
+        "IB_SPECIAL-9-1": [],
+        "IB_SPECIAL-11-4": [],
+        "IB_SPECIAL-11-2": [],
+        "IB_SPECIAL-11-6": []
       },
       "specialAssignments": {
         "IB_SPECIAL-0-5": [],
@@ -1151,7 +1182,9 @@
         "IB_SPECIAL-5-5": [],
         "IB_SPECIAL-5-7": [],
         "IB_SPECIAL-6-3": [],
-        "IB_SPECIAL-9-3": []
+        "IB_SPECIAL-9-3": [],
+        "IB_SPECIAL-11-3": [],
+        "IB_SPECIAL-11-7": []
       },
       "manualAssignments": {}
     },
