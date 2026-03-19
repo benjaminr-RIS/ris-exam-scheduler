@@ -746,7 +746,7 @@
                     const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()];
                     const startBlock = RIS_CYCLE_CALENDAR[dateKey] || 'TBD';
                     const headerStyle = startBlock === '?' ? 'opacity:0.5;' : '';
-                    html += `<div class="day-header" style="grid-column:${i+2}; grid-row:1; ${headerStyle}">${dayName}<br>${date.getDate()}/${date.getMonth()+1}<br><small>${startBlock === '?' ? 'No School' : startBlock}</small></div>`;
+                    html += `<div class="day-header" style="grid-column:${i+2}; grid-row:1; ${headerStyle}">${dayName}<br>${date.getMonth()+1}/${date.getDate()}<br><small>${startBlock === '?' ? 'No School' : startBlock}</small></div>`;
                 });
                 
                 // Fill remaining columns
@@ -991,16 +991,7 @@
             const available = [];
             const unavailable = [];
             const genderFiltered = [];
-
-            // Always include the currently-assigned teacher even if outside program/gender filter
-            const eligibleIds = new Set(eligibleTeachers.map(t => t.id));
-            const teacherList = [...eligibleTeachers];
-            if (selectedId && !eligibleIds.has(selectedId)) {
-                const assignedTeacher = TEACHERS.find(t => t.id === selectedId);
-                if (assignedTeacher) teacherList.push(assignedTeacher);
-            }
-
-            teacherList.forEach(t => {
+            eligibleTeachers.forEach(t => {
                 // If gender requirement set and teacher doesn't match, put in genderFiltered
                 // 'MF' means 1 of each — show all teachers, no filtering
                 if (genderReq && genderReq !== 'MF' && t.gender !== genderReq) {
@@ -1027,8 +1018,7 @@
 
             function makeOption(t, assigned, full, hasCommitment) {
                 let status = full ? ' — FULL' : ' — Available';
-                const outOfProgram = !eligibleIds.has(t.id) ? ' ⚠ cross-program' : '';
-                return `<option value="${t.id}" ${selectedId === t.id ? 'selected' : ''}>${t.name} (${assigned}/${t.required})${status}${outOfProgram}</option>`;
+                return `<option value="${t.id}" ${selectedId === t.id ? 'selected' : ''}>${t.name} (${assigned}/${t.required})${status}</option>`;
             }
 
             let html = '';
@@ -1699,7 +1689,6 @@
                 return String(d.getDate()).padStart(2,'0') + '/' +
                        String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
             }
-            const defaultDisplayStr = isExisting ? toDisplayDate(currentDate) : '27/04/2026';
 
             if (window.currentBlockAvailModal) window.currentBlockAvailModal.remove();
 
@@ -1730,13 +1719,13 @@
                     <div style="background:#f0f4ff;border:1px solid #d0d8f0;border-radius:8px;padding:11px 14px;
                         font-size:12px;color:#34495e;margin-bottom:18px;line-height:1.5;">
                         ${isExisting
-                            ? `<strong>Currently available from ${formatDate(currentDate)}.</strong><br>Update the date below or remove this availability.`
+                            ? `<strong>Currently available from ${toDisplayDate(currentDate)}.</strong><br>Update the date below or remove this availability.`
                             : `<strong>${teacher.name}</strong> is not yet marked available for <strong>${blockId}</strong>.<br>Set a date from which they can proctor this block.`}
                     </div>
                     <label style="display:block;font-size:12px;font-weight:600;color:#2c3e50;margin-bottom:6px;">
                         Available from:
                     </label>
-                    <input type="date" id="blockAvailDateInput" value="${defaultDateStr}"
+                    <input type="date" id="blockAvailDateInput" value="${isExisting ? formatDateForInput(currentDate) : '2026-04-27'}"
                         style="width:100%;padding:10px 12px;border:2px solid #ddd;border-radius:8px;
                         font-size:14px;color:#2c3e50;outline:none;transition:border 0.2s;"
                         onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
@@ -3595,7 +3584,7 @@
                 if (assignments.length === 0) {
                     html += `<div style="color:#bdc3c7;font-style:italic;font-size:13px;padding:20px 0;text-align:center;">No assignments yet.</div>`;
                 } else {
-                    html += `<table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;"><colgroup><col style="width:64px;"><col style="width:74px;"><col style="width:78px;"><col><col style="width:90px;"><col style="width:110px;"></colgroup>
+                    html += `<table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;"><colgroup><col style="width:54px;"><col style="width:76px;"><col style="width:82px;"><col><col style="width:90px;"><col style="width:110px;"></colgroup>
                         <thead><tr style="background:#f0f3f7;">
                             <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">TYPE</th>
                             <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">DATE</th>
@@ -3685,7 +3674,7 @@
                 if (availableExams.length === 0) {
                     html += `<div style="color:#bdc3c7;font-style:italic;font-size:13px;padding:12px 0;">No eligible exam slots found based on available blocks.</div>`;
                 } else {
-                    html += `<table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;"><colgroup><col style="width:72px;"><col style="width:64px;"><col style="width:74px;"><col style="width:78px;"><col><col style="width:96px;"><col style="width:110px;"></colgroup>
+                    html += `<table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;"><colgroup><col style="width:72px;"><col style="width:54px;"><col style="width:76px;"><col style="width:82px;"><col><col style="width:96px;"><col style="width:110px;"></colgroup>
                         <thead><tr style="background:#f0f3f7;">
                             <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">STATUS</th>
                             <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">TYPE</th>
