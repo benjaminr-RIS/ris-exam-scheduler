@@ -2864,9 +2864,17 @@
       "gender": "F",
       "program": "Both",
       "color": "#e74c3c"
+    },
+    {
+      "id": 38,
+      "name": "Christoffer John Aquino",
+      "required": 0,
+      "gender": "M",
+      "program": "Both",
+      "color": "#3498db"
     }
   ],
-  "nextTeacherId": 38,
+  "nextTeacherId": 39,
   "teacherBlockCommitments": {
     "1": {
       "A1": "2026-04-27T00:00:00.000Z",
