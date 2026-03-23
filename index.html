@@ -588,6 +588,7 @@
         let TEACHERS = [];
         
         let teacherBlockCommitments = {};
+        let teacherExamConflicts = {}; // { teacherId: Set of exam name strings }
         let nextTeacherId = 1;
         const COLORS = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'];
         TEACHERS.forEach(t => teacherBlockCommitments[t.id] = {});
@@ -969,7 +970,7 @@
             }, 150);
         }
         
-        function buildTeacherOptions(eligibleTeachers, cycleBlock, isSpecial, selectedId, genderReq) {
+        function buildTeacherOptions(eligibleTeachers, cycleBlock, isSpecial, selectedId, genderReq, examName) {
             // Split into: available for this block vs not available
             // Also filter by gender requirement if set
             // cycleBlock may be "LUNCH+D1" for merged slots — check both parts
@@ -989,48 +990,51 @@
             }
 
             teacherList.forEach(t => {
+                // Exam conflict of interest check
+                const hasExamConflict = examName && (teacherExamConflicts[String(t.id)] || new Set()).has(examName);
                 // If gender requirement set and teacher doesn't match, put in genderFiltered
                 // 'MF' means 1 of each — show all teachers, no filtering
                 if (genderReq && genderReq !== 'MF' && t.gender !== genderReq) {
-                    genderFiltered.push({ t, assigned: getTotalAssignedHours(t.id), full: false, reason: 'gender' });
+                    genderFiltered.push({ t, assigned: getTotalAssignedHours(t.id), full: false, reason: 'gender', hasExamConflict });
                     return;
                 }
                 const assigned = getTotalAssignedHours(t.id);
                 const full = assigned >= t.required;
                 if (isSpecial) {
                     // Special slots: any eligible teacher is "available"
-                    available.push({ t, assigned, full, hasCommitment: true });
+                    available.push({ t, assigned, full, hasCommitment: true, hasExamConflict });
                 } else {
                     const commits = teacherBlockCommitments[t.id] || {};
                     const hasPrimary = !!(commits[primaryBlock]);
                     const hasMerged  = !mergedBlock || !(/^[ABCD][12345]$/.test(mergedBlock) || /^FLEX-/.test(mergedBlock)) || !!(commits[mergedBlock]);
                     const hasCommitment = hasPrimary && hasMerged;
                     if (hasCommitment) {
-                        available.push({ t, assigned, full, hasCommitment: true });
+                        available.push({ t, assigned, full, hasCommitment: true, hasExamConflict });
                     } else {
-                        unavailable.push({ t, assigned, full, hasCommitment: false });
+                        unavailable.push({ t, assigned, full, hasCommitment: false, hasExamConflict });
                     }
                 }
             });
 
-            function makeOption(t, assigned, full, hasCommitment) {
+            function makeOption(t, assigned, full, hasCommitment, hasExamConflict) {
                 let status = full ? ' — FULL' : ' — Available';
                 const outOfProgram = !eligibleIds.has(t.id) ? ' ⚠ cross-program' : '';
-                return `<option value="${t.id}" ${selectedId === t.id ? 'selected' : ''}>${t.name} (${assigned}/${t.required})${status}${outOfProgram}</option>`;
+                const conflictFlag = hasExamConflict ? ' 🚫 conflict of interest' : '';
+                return `<option value="${t.id}" ${selectedId === t.id ? 'selected' : ''}>${t.name} (${assigned}/${t.required})${status}${outOfProgram}${conflictFlag}</option>`;
             }
 
             let html = '';
             if (available.length > 0) {
                 html += `<optgroup label="✓ Available this block">`;
-                available.forEach(({ t, assigned, full }) => {
-                    html += makeOption(t, assigned, full, true);
+                available.forEach(({ t, assigned, full, hasExamConflict }) => {
+                    html += makeOption(t, assigned, full, true, hasExamConflict);
                 });
                 html += `</optgroup>`;
             }
             if (unavailable.length > 0) {
                 html += `<optgroup label="✗ Not available this block">`;
-                unavailable.forEach(({ t, assigned, full }) => {
-                    html += makeOption(t, assigned, full, false);
+                unavailable.forEach(({ t, assigned, full, hasExamConflict }) => {
+                    html += makeOption(t, assigned, full, false, hasExamConflict);
                 });
                 html += `</optgroup>`;
             }
@@ -1084,7 +1088,7 @@
             for (let i = 0; i < proctorCount; i++) {
                 const assignedId = currentAssignments[i] || '';
                 const genderReq = data.slotGenderReq ? (data.slotGenderReq[slotId] || '') : '';
-                const options = buildTeacherOptions(eligibleTeachers, cycleBlock, isSpecial, assignedId, genderReq);
+                const options = buildTeacherOptions(eligibleTeachers, cycleBlock, isSpecial, assignedId, genderReq, examName);
                 teacherDropdowns += `
                     <div style="margin-bottom: 10px;">
                         <label style="display: block; font-size: 13px; font-weight: 600; color: #2c3e50; margin-bottom: 5px;">
@@ -1321,7 +1325,8 @@
             for (let i = 0; i < ctx.proctorCount; i++) {
                 const assignedId = currentAssignments[i] || '';
                 const genderReqAdj = ctx.data.slotGenderReq ? (ctx.data.slotGenderReq[ctx.slotId] || '') : '';
-                const options = buildTeacherOptions(eligibleTeachers, cycleBlock, ctx.isSpecial, assignedId, genderReqAdj);
+                const ctxExamName = (ctx.data.slotExamNames || {})[ctx.slotId] || '';
+                const options = buildTeacherOptions(eligibleTeachers, cycleBlock, ctx.isSpecial, assignedId, genderReqAdj, ctxExamName);
                 dropdowns += `
                     <div style="margin-bottom: 10px;">
                         <label style="display: block; font-size: 13px; font-weight: 600; color: #2c3e50; margin-bottom: 5px;">Proctor ${i + 1}:</label>
@@ -1516,8 +1521,9 @@
                     });
                     let dropdowns = '';
                     const genderReqVal = document.getElementById('examGenderReq') ? document.getElementById('examGenderReq').value : '';
+                    const genderCtxExamName = (ctx.data.slotExamNames || {})[ctx.slotId] || '';
                     for (let i = 0; i < targetCount; i++) {
-                        const opts = buildTeacherOptions(eligibleTeachers, cycleBlock, ctx.isSpecial, '', genderReqVal);
+                        const opts = buildTeacherOptions(eligibleTeachers, cycleBlock, ctx.isSpecial, '', genderReqVal, genderCtxExamName);
                         dropdowns += '<div style="margin-bottom: 10px;"><label style="display: block; font-size: 13px; font-weight: 600; color: #2c3e50; margin-bottom: 5px;">Proctor ' + (i + 1) + ':</label><select id="proctor-' + i + '" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 13px;"><option value="">-- Select Teacher --</option>' + opts + '</select></div>';
                     }
                     container.innerHTML = '';
@@ -1545,6 +1551,16 @@
             return `${days[date.getDay()]} ${months[date.getMonth()]} ${date.getDate()}`;
         }
         
+        function getAllUniqueExamNames() {
+            const names = new Set();
+            Object.values(examData).forEach(data => {
+                Object.values(data.slotExamNames || {}).forEach(name => {
+                    if (name) names.add(name);
+                });
+            });
+            return Array.from(names).sort((a, b) => a.localeCompare(b));
+        }
+
         function getTotalAssignedHours(teacherId) {
             let total = 0;
             Object.keys(examData).forEach(type => {
@@ -1560,6 +1576,7 @@
         }
         
         function generateTeacherCards() {
+            normalizeExamConflictKeys(); // ensure string keys before rendering
             const grid = document.getElementById('teacherGrid');
             // Remember which cards are currently expanded
             const expanded = new Set();
@@ -1661,6 +1678,263 @@
                     });
                 });
             });
+        }
+
+        // ── Builds just the right-panel HTML for a teacher card ──────────────────
+        // Used both during initial card render and for instant conflict-toggle refresh
+        function buildTeacherCardRight(teacher) {
+            // Local helpers (same as generateTeacherCards context)
+            function fmt12h(t) {
+                if (!t) return '';
+                const [h, m] = t.split(':').map(Number);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                return (h % 12 || 12) + ':' + String(m).padStart(2,'0') + ampm;
+            }
+            function fmtDate(d) {
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                return months[d.getMonth()] + ' ' + d.getDate();
+            }
+            const typeColors = { 'IB_1':'#2980b9','IB_2':'#1a5276','IB_SPECIAL':'#8e44ad','AP-1':'#e67e22','AP-2':'#c0392b','AP-3':'#16a085','AP-4':'#8e44ad' };
+            const typeLabels = { 'IB_1':'IB-1','IB_2':'IB-2','IB_SPECIAL':'IB*','AP-1':'AP-1','AP-2':'AP-2','AP-3':'AP-3','AP-4':'AP-4' };
+
+            // Collect assignments across all calendars
+            const assignments = [];
+            Object.keys(examData).forEach(examType => {
+                const data = examData[examType];
+                const allSlotIds = Array.from(data.examSlots || []);
+                allSlotIds.forEach(slotId => {
+                    const assigned = [...(data.assignments[slotId]||[]), ...(data.specialAssignments[slotId]||[])];
+                    if (!assigned.includes(teacher.id)) return;
+                    const parts = slotId.split('-');
+                    const dateIdx = parseInt(parts[parts.length-2]);
+                    const periodIdx = parseInt(parts[parts.length-1]);
+                    const date = data.dates[dateIdx];
+                    if (!date) return;
+                    const cycleBlock = getMergeBlockLabel(examType, slotId,
+                        getCycleBlockForSlot(dateIdx, periodIdx, examType));
+                    assignments.push({
+                        date, examType,
+                        block: cycleBlock,
+                        exam:  (data.slotExamNames  && data.slotExamNames[slotId])  || '(unnamed)',
+                        room:  (data.slotRoom        && data.slotRoom[slotId])        || '',
+                        start: (data.slotTimes       && data.slotTimes[slotId])       || '',
+                        end:   (data.slotEndTimes    && data.slotEndTimes[slotId])    || '',
+                    });
+                });
+            });
+            assignments.sort((a, b) => a.date - b.date);
+
+            const assigned = assignments.length;
+            const required = teacher.required || 0;
+            const barColor = assigned >= required ? '#27ae60' : assigned > 0 ? '#f39c12' : '#e74c3c';
+
+            let html = `<div style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Exam Proctoring Schedule</div>`;
+
+            if (assignments.length === 0) {
+                html += `<div style="color:#bdc3c7;font-style:italic;font-size:13px;padding:20px 0;text-align:center;">No assignments yet.</div>`;
+            } else {
+                html += `<table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;"><colgroup><col style="width:68px;"><col style="width:76px;"><col style="width:82px;"><col><col style="width:90px;"><col style="width:110px;"></colgroup>
+                    <thead><tr style="background:#f0f3f7;">
+                        <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">TYPE</th>
+                        <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">DATE</th>
+                        <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">BLOCK</th>
+                        <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">EXAM</th>
+                        <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">ROOM</th>
+                        <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">TIME</th>
+                    </tr></thead><tbody>`;
+                assignments.forEach((a, i) => {
+                    const bg  = i % 2 === 0 ? 'white' : '#fafbfc';
+                    const tc  = typeColors[a.examType] || '#555';
+                    const lbl = typeLabels[a.examType] || a.examType;
+                    const time = a.start ? fmt12h(a.start) + (a.end ? '–' + fmt12h(a.end) : '') : '—';
+                    html += `<tr style="background:${bg};border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:5px 8px;"><span style="background:${tc};color:white;padding:1px 5px;border-radius:3px;font-size:11px;font-weight:700;">${lbl}</span></td>
+                        <td style="padding:5px 8px;color:#555;white-space:nowrap;">${fmtDate(a.date)}</td>
+                        <td style="padding:5px 8px;font-weight:700;color:#2c3e50;white-space:nowrap;">${a.block}</td>
+                        <td style="padding:5px 8px;color:#555;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.exam}">${a.exam}</td>
+                        <td style="padding:5px 8px;color:#7f8c8d;">${a.room || '—'}</td>
+                        <td style="padding:5px 8px;color:#7f8c8d;white-space:nowrap;">${time}</td>
+                    </tr>`;
+                });
+                html += `</tbody></table>`;
+            }
+
+            html += `<div style="margin-top:10px;font-size:12px;font-weight:700;color:${barColor};">Total: ${assigned} / ${required} sessions</div>`;
+
+            // ── Available Exam Slots (conflict-filtered) ──────────────────────
+            const commitments    = teacherBlockCommitments[teacher.id] || {};
+            const conflictSet    = teacherExamConflicts[String(teacher.id)] || new Set();
+            const eligibleTypes  = teacher.program === 'IB'  ? ['IB_1','IB_2','IB_SPECIAL'] :
+                                   teacher.program === 'AP'  ? ['AP-1','AP-2','AP-3','AP-4'] :
+                                                               ['IB_1','IB_2','IB_SPECIAL','AP-1','AP-2','AP-3','AP-4'];
+            const availableExams = [];
+            eligibleTypes.forEach(function(et) {
+                const d = examData[et];
+                const typeName = typeLabels[et] || et;
+                d.examSlots.forEach(function(slotId) {
+                    const parts = slotId.split('-');
+                    const dateIdx   = parseInt(parts[parts.length-2]);
+                    const periodIdx = parseInt(parts[parts.length-1]);
+                    const date = d.dates[dateIdx];
+                    if (!date) return;
+                    const schedule = getScheduleForDate(date);
+                    if (!schedule) return;
+                    const cycleBlock = schedule[periodIdx];
+                    if (!cycleBlock) return;
+                    const isRegularBlock = /^[ABCD][12345]$/.test(cycleBlock);
+                    const isLunch = cycleBlock === 'LUNCH';
+                    const isFlex  = /^FLEX-/.test(cycleBlock);
+                    const isAfter = cycleBlock === 'After School';
+                    const nextBlock = (d.slotMergeDown && d.slotMergeDown.has(slotId))
+                        ? getCycleBlockForSlot(parseInt(slotId.split('-')[slotId.startsWith('IB') ? 1 : 2]),
+                            parseInt(slotId.split('-')[slotId.startsWith('IB') ? 2 : 3]) + 1, et)
+                        : null;
+                    const isNextRegular = nextBlock && /^[ABCD][12345]$/.test(nextBlock);
+                    const isNextFlex    = nextBlock && /^FLEX-/.test(nextBlock);
+                    if ((isRegularBlock || isFlex) && !commitments[cycleBlock]) return;
+                    if (nextBlock && (isNextRegular || isNextFlex) && !commitments[nextBlock]) return;
+                    const examNameVal = (d.slotExamNames && d.slotExamNames[slotId]) || '(unnamed)';
+                    if (conflictSet.has(examNameVal)) return;
+                    const cycleBlockLabel = getMergeBlockLabel(et, slotId, cycleBlock);
+                    availableExams.push({
+                        date, periodIdx, examType: et, typeName, cycleBlock: cycleBlockLabel,
+                        isLunch, isFlex, isAfter, isRegularBlock,
+                        exam:  examNameVal,
+                        start: d.slotTimes    ? (d.slotTimes[slotId]    || '') : '',
+                        end:   d.slotEndTimes ? (d.slotEndTimes[slotId] || '') : '',
+                        room:  d.slotRoom     ? (d.slotRoom[slotId]     || '') : '',
+                    });
+                });
+            });
+            sortExamRows(availableExams);
+
+            const assignedKeys = new Set(assignments.map(a => fmtDate(a.date) + '|' + a.block + '|' + (typeLabels[a.examType] || a.examType)));
+
+            html += `<div style="margin-top:18px;">
+                <div style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+                    All Available Exam Slots
+                    <span style="font-weight:400;color:#bdc3c7;text-transform:none;letter-spacing:0;margin-left:6px;">(${availableExams.length} slot${availableExams.length !== 1 ? 's' : ''})</span>
+                </div>`;
+
+            if (availableExams.length === 0) {
+                html += `<div style="color:#bdc3c7;font-style:italic;font-size:13px;padding:12px 0;">No eligible exam slots found based on available blocks.</div>`;
+            } else {
+                html += `<table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;"><colgroup><col style="width:72px;"><col style="width:68px;"><col style="width:76px;"><col style="width:82px;"><col><col style="width:96px;"><col style="width:110px;"></colgroup>
+                    <thead><tr style="background:#f0f3f7;">
+                        <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">STATUS</th>
+                        <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">TYPE</th>
+                        <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">DATE</th>
+                        <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">BLOCK</th>
+                        <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">EXAM</th>
+                        <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">ROOM</th>
+                        <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">TIME</th>
+                    </tr></thead><tbody>`;
+                availableExams.forEach(function(ae, i) {
+                    const key = fmtDate(ae.date) + '|' + ae.cycleBlock + '|' + ae.typeName;
+                    const isAssigned = assignedKeys.has(key);
+                    const bg = i % 2 === 0 ? 'white' : '#fafbfc';
+                    const time = ae.start ? fmt12h(ae.start) + (ae.end ? '–' + fmt12h(ae.end) : '') : '—';
+                    const blockLabel = isAssigned ? '✓ ASSIGNED' : ae.isLunch ? 'LUNCH' : ae.isAfter ? 'AFTER' : 'AVAILABLE';
+                    html += `<tr style="background:${bg};border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:4px 8px;font-size:11px;font-weight:700;color:#7f8c8d;">${blockLabel}</td>
+                        <td style="padding:4px 8px;font-size:11px;font-weight:700;color:#7f8c8d;">${ae.typeName}</td>
+                        <td style="padding:4px 8px;color:#555;white-space:nowrap;">${fmtDate(ae.date)}</td>
+                        <td style="padding:4px 8px;font-weight:700;color:#2c3e50;white-space:nowrap;">${ae.cycleBlock}</td>
+                        <td style="padding:4px 8px;color:#555;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${ae.exam}">${ae.exam}</td>
+                        <td style="padding:4px 8px;color:#7f8c8d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ae.room || '—'}</td>
+                        <td style="padding:4px 8px;color:#7f8c8d;white-space:nowrap;">${time}</td>
+                    </tr>`;
+                });
+                html += `</tbody></table>`;
+            }
+            html += `</div>`; // available slots section
+            return html;
+        }
+
+        // ── Instantly refreshes the right panel of a teacher card on conflict toggle
+        function refreshTeacherCardRight(teacherId) {
+            const teacher = TEACHERS.find(t => t.id === teacherId || String(t.id) === String(teacherId));
+            if (!teacher) return;
+            const rightPanel = document.getElementById('tcard-' + teacher.id + '-right');
+            if (!rightPanel) return; // card not expanded/rendered yet — nothing to do
+            rightPanel.innerHTML = buildTeacherCardRight(teacher);
+        }
+
+        function toggleExamConflict(teacherId, examName) {
+            const tid = String(teacherId);
+            if (!teacherExamConflicts[tid]) teacherExamConflicts[tid] = new Set();
+            const conflicts = teacherExamConflicts[tid];
+            if (conflicts.has(examName)) {
+                conflicts.delete(examName);
+            } else {
+                conflicts.add(examName);
+            }
+            const isNowChecked = conflicts.has(examName);
+
+            // ── Targeted DOM update: update just this checkbox's label style ──
+            // (avoids full card re-render which would reset all checkboxes)
+            const safeId = 'ec-' + teacherId + '-' + examName.replace(/[^a-zA-Z0-9]/g, '_');
+            const input = document.getElementById(safeId);
+            if (input) {
+                input.checked = isNowChecked;
+                const span = input.nextElementSibling;
+                if (span) {
+                    span.style.color = isNowChecked ? '#e74c3c' : '';
+                    span.style.fontWeight = isNowChecked ? '600' : '';
+                }
+            }
+
+            // ── Update badge count ──
+            const badge = document.getElementById('conflict-badge-' + teacherId);
+            const count = conflicts.size;
+            if (badge) {
+                badge.textContent = count > 0 ? count + ' conflict' + (count > 1 ? 's' : '') : '';
+                badge.style.color = count > 0 ? '#e74c3c' : '#bdc3c7';
+            }
+
+            autoSave();
+            // Instantly refresh the right panel (schedule + available slots)
+            refreshTeacherCardRight(teacherId);
+        }
+
+        function buildExamConflictPanel(teacher) {
+            const allNames = getAllUniqueExamNames();
+            const conflicts = teacherExamConflicts[String(teacher.id)] || new Set();
+            const conflictCount = conflicts.size;
+            const panelId = 'exam-conflict-panel-' + teacher.id;
+            const arrowId = 'exam-conflict-arrow-' + teacher.id;
+
+            const checkboxes = allNames.map(name => {
+                const checked = conflicts.has(name) ? 'checked' : '';
+                const safeId = 'ec-' + teacher.id + '-' + name.replace(/[^a-zA-Z0-9]/g, '_');
+                // Escape for use inside a double-quoted HTML attribute
+                const escapedName = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                return `<label style="display:flex;align-items:center;gap:6px;padding:3px 0;cursor:pointer;font-size:12px;color:#2c3e50;">
+                    <input type="checkbox" id="${safeId}" ${checked}
+                        onchange="toggleExamConflict(${teacher.id}, '${escapedName}')"
+                        style="accent-color:#e74c3c;width:13px;height:13px;cursor:pointer;">
+                    <span style="${conflicts.has(name) ? 'color:#e74c3c;font-weight:600;' : ''}">${name}</span>
+                </label>`;
+            }).join('');
+
+            return `
+                <div style="margin-top:14px;border-top:1px dashed #ddd;padding-top:10px;">
+                    <div onclick="document.getElementById('${panelId}').style.display=document.getElementById('${panelId}').style.display==='none'?'block':'none';document.getElementById('${arrowId}').style.transform=document.getElementById('${panelId}').style.display==='none'?'rotate(0deg)':'rotate(90deg)';"
+                         style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;">
+                        <span id="${arrowId}" style="font-size:10px;color:#7f8c8d;transition:transform 0.2s;display:inline-block;">▶</span>
+                        <span style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase;letter-spacing:0.5px;">Exam Conflicts</span>
+                        <span id="conflict-badge-${teacher.id}"
+                              style="font-size:10px;font-weight:700;color:${conflictCount > 0 ? '#e74c3c' : '#bdc3c7'};margin-left:2px;">
+                            ${conflictCount > 0 ? conflictCount + ' conflict' + (conflictCount > 1 ? 's' : '') : ''}
+                        </span>
+                    </div>
+                    <div id="${panelId}" style="display:none;margin-top:8px;max-height:220px;overflow-y:auto;
+                         padding:6px 8px;background:#fff5f5;border:1px solid #fad7d7;border-radius:6px;">
+                        ${allNames.length === 0
+                            ? '<div style="font-size:12px;color:#bdc3c7;font-style:italic;">No exams scheduled yet.</div>'
+                            : checkboxes}
+                    </div>
+                </div>`;
         }
 
         function toggleTeacherAdminCard(teacherId) {
@@ -1976,7 +2250,7 @@
                     btn.innerHTML = origHTML;
                     btn.style.opacity = '';
                 }
-                showToast('✓ Scheduler complete!', 2500);
+                showClipToast('✓ Scheduler complete!', 2500);
             }, 2000);
         }
 
@@ -2014,6 +2288,7 @@
         //  E) Teachers with required = 0 are fully invisible (hire-as-needed staff).
         // ════════════════════════════════════════════════════════════════════════
         function runUnifiedScheduler() {
+            normalizeExamConflictKeys(); // ensure string keys before filtering
             const log = document.getElementById('reportLog');
             log.innerHTML = '<div style="padding:10px;background:#3498db;color:white;border-radius:4px;margin-bottom:10px;"><strong><i class="fa-solid fa-play" style="margin-right:6px;"></i>Unified Scheduler — all 7 calendars</strong></div>';
 
@@ -2155,12 +2430,16 @@
                 if (needed <= 0) return;
 
                 const progFilter = isIbCal ? ['IB', 'Both'] : ['AP', 'Both'];
+                const slotExamName = (data.slotExamNames || {})[slotId] || '';
 
                 const candidates = activeTeachers.filter(t => {
                     if (!progFilter.includes(t.program)) return false;
                     if (!(teacherBlockCommitments[t.id] || {})[lookupBlock]) return false;
                     if (getTotalAssignedHours(t.id) >= t.required) return false;
                     if (currentAssignments.includes(t.id)) return false;
+
+                    // Exam conflict of interest: skip if teacher flagged this exam
+                    if (slotExamName && (teacherExamConflicts[String(t.id)] || new Set()).has(slotExamName)) return false;
 
                     // Cross-AP conflict: only one AP calendar per time slot
                     if (!isIbCal) {
@@ -2805,6 +3084,7 @@
 
                 // ── Section 2: All Available Exam Slots ───────────────────────
                 const commitments = teacherBlockCommitments[teacher.id] || {};
+                const pdfConflictSet = teacherExamConflicts[String(teacher.id)] || new Set();
                 const eligibleTypes = teacher.program === 'IB'  ? ['IB_1','IB_2','IB_SPECIAL'] :
                                       teacher.program === 'AP'  ? ['AP-1','AP-2','AP-3','AP-4'] :
                                                                   ['IB_1','IB_2','IB_SPECIAL','AP-1','AP-2','AP-3','AP-4'];
@@ -2827,10 +3107,13 @@
                         const isFlex   = (/^FLEX-/.test(cycleBlock));
                         const isAfter  = cycleBlock === 'After School';
                         if ((isRegularBlock || isFlex) && !commitments[cycleBlock]) return;
+                        const pdfExamName = data.slotExamNames[slotId] || '(unnamed)';
+                        // Skip exams flagged as conflict of interest for this teacher
+                        if (pdfConflictSet.has(pdfExamName)) return;
                         const cycleBlockLabel = getMergeBlockLabel(examType, slotId, cycleBlock);
                         availableExams.push({
                             date, dateKey: formatDateKey(date), cycleBlock: cycleBlockLabel, periodIdx, typeName,
-                            exam:      data.slotExamNames[slotId]  || '(unnamed)',
+                            exam:      pdfExamName,
                             startTime: data.slotTimes    ? (data.slotTimes[slotId]    || '') : '',
                             endTime:   data.slotEndTimes ? (data.slotEndTimes[slotId] || '') : '',
                             room:      data.slotRoom     ? (data.slotRoom[slotId]     || '') : '',
@@ -3009,6 +3292,14 @@
                     state.teacherBlockCommitments[id][block] = teacherBlockCommitments[id][block].toISOString();
                 });
             });
+            // Serialize exam conflicts: Set -> Array
+            state.teacherExamConflicts = {};
+            Object.keys(teacherExamConflicts).forEach(id => {
+                const conflicts = teacherExamConflicts[id];
+                if (conflicts && conflicts.size > 0) {
+                    state.teacherExamConflicts[id] = Array.from(conflicts);
+                }
+            });
             const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -3046,6 +3337,14 @@
                                 teacherBlockCommitments[teacherId][block] = new Date(state.teacherBlockCommitments[teacherId][block]);
                             });
                         });
+
+                        // Deserialize exam conflicts: Array -> Set (always string keys)
+                        teacherExamConflicts = {};
+                        if (state.teacherExamConflicts) {
+                            Object.keys(state.teacherExamConflicts).forEach(id => {
+                                teacherExamConflicts[String(id)] = new Set(state.teacherExamConflicts[id] || []);
+                            });
+                        }
                         
                         Object.keys(state.examData).forEach(examType => {
                             if (examData[examType]) {
@@ -3311,6 +3610,10 @@
             if (program === 'IB' || program === 'Both') examTypesToCheck.push('IB_1', 'IB_2', 'IB_SPECIAL');
             if (program === 'AP' || program === 'Both') examTypesToCheck.push('AP-1', 'AP-2', 'AP-3', 'AP-4');
 
+            // Look up this teacher's conflict set by name match
+            const matchedTeacher = TEACHERS.find(t => t.name.toLowerCase() === name.toLowerCase());
+            const myConflicts = matchedTeacher ? (teacherExamConflicts[String(matchedTeacher.id)] || new Set()) : new Set();
+
             examTypesToCheck.forEach(examType => {
                 const data = examData[examType];
                 data.examSlots.forEach(slotId => {
@@ -3343,6 +3646,9 @@
                     if (spotsLeft <= 0) return;
 
                     const examName = data.slotExamNames[slotId] || '(unnamed exam)';
+
+                    // Skip exams the teacher has flagged as a conflict of interest
+                    if (myConflicts.has(examName)) return;
                     const examTime = data.slotTimes ? (data.slotTimes[slotId] || '') : '';
                     const notes = data.slotNotes ? (data.slotNotes[slotId] || '') : '';
 
@@ -3828,146 +4134,13 @@
                                 <div style="margin-top:10px;font-size:11px;color:#27ae60;font-weight:600;">
                                     ${Object.keys(teacherBlockCommitments[teacher.id]||{}).length} of 24 blocks
                                 </div>
+                                ${buildExamConflictPanel(teacher)}
                             </div>
 
                             <!-- Right panel: assignment table -->
-                            <div style="padding:16px;">
-                                <div style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">
-                                    Exam Proctoring Schedule
-                                </div>`;
-
-                if (assignments.length === 0) {
-                    html += `<div style="color:#bdc3c7;font-style:italic;font-size:13px;padding:20px 0;text-align:center;">No assignments yet.</div>`;
-                } else {
-                    html += `<table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;"><colgroup><col style="width:68px;"><col style="width:76px;"><col style="width:82px;"><col><col style="width:90px;"><col style="width:110px;"></colgroup>
-                        <thead><tr style="background:#f0f3f7;">
-                            <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">TYPE</th>
-                            <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">DATE</th>
-                            <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">BLOCK</th>
-                            <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">EXAM</th>
-                            <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">ROOM</th>
-                            <th style="padding:5px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">TIME</th>
-                        </tr></thead>
-                        <tbody>`;
-
-                    assignments.forEach((a, i) => {
-                        const bg   = i % 2 === 0 ? 'white' : '#fafbfc';
-                        const tc   = typeColors[a.examType] || '#555';
-                        const lbl  = typeLabels[a.examType] || a.examType;
-                        const time = a.start ? fmt12h(a.start) + (a.end ? '–' + fmt12h(a.end) : '') : '—';
-                        html += `<tr style="background:${bg};border-bottom:1px solid #f0f0f0;">
-                            <td style="padding:5px 8px;"><span style="background:${tc};color:white;padding:1px 5px;border-radius:3px;font-size:11px;font-weight:700;">${lbl}</span></td>
-                            <td style="padding:5px 8px;color:#555;white-space:nowrap;">${fmtDate(a.date)}</td>
-                            <td style="padding:5px 8px;font-weight:700;color:#2c3e50;white-space:nowrap;">${a.block}</td>
-                            <td style="padding:5px 8px;color:#555;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.exam}">${a.exam}</td>
-                            <td style="padding:5px 8px;color:#7f8c8d;">${a.room || '—'}</td>
-                            <td style="padding:5px 8px;color:#7f8c8d;white-space:nowrap;">${time}</td>
-                        </tr>`;
-                    });
-
-                    html += `</tbody></table>`;
-                }
-
-                html += `<div style="margin-top:10px;font-size:12px;font-weight:700;color:${barColor};">
-                            Total: ${assigned} / ${required} sessions
-                          </div>`;
-
-                // ── Available Exam Slots section ────────────────────────────
-                const commitments = teacherBlockCommitments[teacher.id] || {};
-                const eligibleTypes = teacher.program === 'IB'  ? ['IB_1','IB_2','IB_SPECIAL'] :
-                                      teacher.program === 'AP'  ? ['AP-1','AP-2','AP-3','AP-4'] :
-                                                                  ['IB_1','IB_2','IB_SPECIAL','AP-1','AP-2','AP-3','AP-4'];
-                const availableExams = [];
-                eligibleTypes.forEach(function(et) {
-                    const d = examData[et];
-                    const typeName = typeLabels[et] || et;
-                    d.examSlots.forEach(function(slotId) {
-                        const parts = slotId.split('-');
-                        const dateIdx = parseInt(parts[parts.length - 2]);
-                        const periodIdx = parseInt(parts[parts.length - 1]);
-                        const date = d.dates[dateIdx];
-                        if (!date) return;
-                        const schedule = getScheduleForDate(date);
-                        if (!schedule) return;
-                        const cycleBlock = schedule[periodIdx];
-                        if (!cycleBlock) return;
-                        const isRegularBlock = /^[ABCD][12345]$/.test(cycleBlock);
-                        const isLunch  = cycleBlock === 'LUNCH';
-                        const isFlex   = (/^FLEX-/.test(cycleBlock));
-                        const isAfter  = cycleBlock === 'After School';
-                        // For merged slots, also check teacher is free in the next block
-                        const nextBlock = (d.slotMergeDown && d.slotMergeDown.has(slotId))
-                            ? getCycleBlockForSlot(parseInt(slotId.split('-')[slotId.startsWith('IB') ? 1 : 2]),
-                                parseInt(slotId.split('-')[slotId.startsWith('IB') ? 2 : 3]) + 1, et)
-                            : null;
-                        const isNextRegular = nextBlock && /^[ABCD][12345]$/.test(nextBlock);
-                        const isNextFlex    = nextBlock && /^FLEX-/.test(nextBlock);
-                        if ((isRegularBlock || isFlex) && !commitments[cycleBlock]) return;
-                        if (nextBlock && (isNextRegular || isNextFlex) && !commitments[nextBlock]) return;
-                        const cycleBlockLabel = getMergeBlockLabel(et, slotId, cycleBlock);
-                        availableExams.push({
-                            date, periodIdx, examType: et, typeName, cycleBlock: cycleBlockLabel,
-                            isLunch, isFlex, isAfter, isRegularBlock,
-                            exam:      (d.slotExamNames && d.slotExamNames[slotId]) || '(unnamed)',
-                            start:     d.slotTimes    ? (d.slotTimes[slotId]    || '') : '',
-                            end:       d.slotEndTimes ? (d.slotEndTimes[slotId] || '') : '',
-                            room:      d.slotRoom     ? (d.slotRoom[slotId]     || '') : '',
-                        });
-                    });
-                });
-                sortExamRows(availableExams);
-
-                // Check which available exams are already assigned to this teacher
-                const assignedKeys = new Set(assignments.map(a => fmtDate(a.date) + '|' + a.block + '|' + typeLabels[a.examType]));
-
-                html += `<div style="margin-top:18px;">
-                    <div style="font-size:11px;font-weight:700;color:#7f8c8d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
-                        All Available Exam Slots
-                        <span style="font-weight:400;color:#bdc3c7;text-transform:none;letter-spacing:0;margin-left:6px;">(${availableExams.length} slot${availableExams.length !== 1 ? 's' : ''})</span>
-                    </div>`;
-
-                if (availableExams.length === 0) {
-                    html += `<div style="color:#bdc3c7;font-style:italic;font-size:13px;padding:12px 0;">No eligible exam slots found based on available blocks.</div>`;
-                } else {
-                    html += `<table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;"><colgroup><col style="width:72px;"><col style="width:68px;"><col style="width:76px;"><col style="width:82px;"><col><col style="width:96px;"><col style="width:110px;"></colgroup>
-                        <thead><tr style="background:#f0f3f7;">
-                            <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">STATUS</th>
-                            <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">TYPE</th>
-                            <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">DATE</th>
-                            <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">BLOCK</th>
-                            <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">EXAM</th>
-                            <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">ROOM</th>
-                            <th style="padding:4px 8px;text-align:left;color:#7f8c8d;font-size:11px;font-weight:700;border-bottom:1px solid #e0e4e8;">TIME</th>
-                        </tr></thead>
-                        <tbody>`;
-
-                    availableExams.forEach(function(ae, i) {
-                        const key = fmtDate(ae.date) + '|' + ae.cycleBlock + '|' + ae.typeName;
-                        const isAssigned = assignedKeys.has(key);
-                        const bg = i % 2 === 0 ? 'white' : '#fafbfc';
-                        const time = ae.start ? fmt12h(ae.start) + (ae.end ? '–' + fmt12h(ae.end) : '') : '—';
-                        let blockLabel;
-                        if (isAssigned)                       blockLabel = '✓ ASSIGNED';
-                        else if (ae.isLunch)                  blockLabel = 'LUNCH';
-                        else if (ae.isAfter)                  blockLabel = 'AFTER';
-                        else                                  blockLabel = 'AVAILABLE';
-                        html += `<tr style="background:${bg};border-bottom:1px solid #f0f0f0;">
-                            <td style="padding:4px 8px;font-size:11px;font-weight:700;color:#7f8c8d;">${blockLabel}</td>
-                            <td style="padding:4px 8px;font-size:11px;font-weight:700;color:#7f8c8d;">${ae.typeName}</td>
-                            <td style="padding:4px 8px;color:#555;white-space:nowrap;">${fmtDate(ae.date)}</td>
-                            <td style="padding:4px 8px;font-weight:700;color:#2c3e50;white-space:nowrap;">${ae.cycleBlock}</td>
-                            <td style="padding:4px 8px;color:#555;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${ae.exam}">${ae.exam}</td>
-                            <td style="padding:4px 8px;color:#7f8c8d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ae.room || '—'}</td>
-                            <td style="padding:4px 8px;color:#7f8c8d;white-space:nowrap;">${time}</td>
-                        </tr>`;
-                    });
-
-                    html += `</tbody></table>`;
-                }
-
-                html += `</div>`; // available slots section
-
-                html += `            </div><!-- right panel -->
+                            <div id="tcard-${teacher.id}-right" style="padding:16px;">
+                                ${buildTeacherCardRight(teacher)}
+                            </div><!-- right panel -->
                         </div><!-- grid -->
                     </div><!-- body -->
                 </div><!-- card -->`;
@@ -4064,6 +4237,7 @@
 
             // ── Collect available exam slots ────────────────────────────────
             var commitments = teacherBlockCommitments[teacher.id] || {};
+            var printConflictSet = teacherExamConflicts[String(teacher.id)] || new Set();
             var eligibleTypes = teacher.program === 'IB' ? ['IB_1','IB_2','IB_SPECIAL'] :
                                 teacher.program === 'AP' ? ['AP-1','AP-2','AP-3','AP-4'] :
                                                            ['IB_1','IB_2','IB_SPECIAL','AP-1','AP-2','AP-3','AP-4'];
@@ -4088,10 +4262,13 @@
                             parseInt(parts[parts.length - 1]) + 1, et)
                         : null;
                     if (_nextBlock2 && (/^[ABCD][12345]$/.test(_nextBlock2) || /^FLEX-/.test(_nextBlock2)) && !commitments[_nextBlock2]) return;
+                    var printExamName = (d.slotExamNames && d.slotExamNames[slotId]) || '(unnamed)';
+                    // Skip exams flagged as conflict of interest for this teacher
+                    if (printConflictSet.has(printExamName)) return;
                     var cycleBlockLabel = getMergeBlockLabel(et, slotId, cycleBlock);
                     availableExams.push({
                         date, periodIdx, examType: et, cycleBlock: cycleBlockLabel, isLunch, isFlex, isAfter, isRegularBlock,
-                        exam:  (d.slotExamNames && d.slotExamNames[slotId]) || '(unnamed)',
+                        exam:  printExamName,
                         start: d.slotTimes    ? (d.slotTimes[slotId]    || '') : '',
                         end:   d.slotEndTimes ? (d.slotEndTimes[slotId] || '') : '',
                         room:  d.slotRoom     ? (d.slotRoom[slotId]     || '') : '',
@@ -4599,7 +4776,7 @@
 
         // ── Build current state object ──
         function buildStateObject() {
-            const s = { version: '5.0', examData: {}, teachers: TEACHERS, nextTeacherId, teacherBlockCommitments: {} };
+            const s = { version: '5.0', examData: {}, teachers: TEACHERS, nextTeacherId, teacherBlockCommitments: {}, teacherExamConflicts: {} };
             Object.keys(examData).forEach(type => {
                 const d = examData[type];
                 s.examData[type] = {
@@ -4626,6 +4803,13 @@
                     const v = teacherBlockCommitments[id][block];
                     s.teacherBlockCommitments[id][block] = v instanceof Date ? v.toISOString() : v;
                 });
+            });
+            // Serialize exam conflicts: Set -> Array
+            Object.keys(teacherExamConflicts).forEach(id => {
+                const conflicts = teacherExamConflicts[id];
+                if (conflicts && conflicts.size > 0) {
+                    s.teacherExamConflicts[id] = Array.from(conflicts);
+                }
             });
             s.schedulerSettings = schedulerSettings;
             return s;
@@ -4663,6 +4847,31 @@
                     teacherBlockCommitments[id][block] = new Date(state.teacherBlockCommitments[id][block]);
                 });
             });
+            // Deserialize exam conflicts: Array -> Set (always string keys)
+            teacherExamConflicts = {};
+            if (state.teacherExamConflicts) {
+                Object.keys(state.teacherExamConflicts).forEach(id => {
+                    teacherExamConflicts[String(id)] = new Set(state.teacherExamConflicts[id] || []);
+                });
+            }
+            // Merge in any conflicts saved to localStorage that aren't yet pushed to GitHub
+            try {
+                const lsRaw = localStorage.getItem('risScheduler');
+                if (lsRaw) {
+                    const lsState = JSON.parse(lsRaw);
+                    if (lsState.teacherExamConflicts) {
+                        Object.keys(lsState.teacherExamConflicts).forEach(id => {
+                            const sid = String(id);
+                            if (!teacherExamConflicts[sid]) teacherExamConflicts[sid] = new Set();
+                            (lsState.teacherExamConflicts[id] || []).forEach(name => {
+                                teacherExamConflicts[sid].add(name);
+                            });
+                        });
+                    }
+                }
+            } catch(e) { /* localStorage merge failed silently */ }
+            // Ensure all keys are strings regardless of source
+            normalizeExamConflictKeys();
             Object.keys(state.examData).forEach(type => {
                 if (!examData[type]) return;
                 const d = state.examData[type];
@@ -4933,6 +5142,20 @@
             t.textContent = message;
             document.body.appendChild(t);
             setTimeout(() => t.remove(), 6000);
+        }
+
+        // ── Normalize teacherExamConflicts keys to strings (guards against numeric keys
+        //    that survive from pre-fix sessions or stale localStorage data) ──────────
+        function normalizeExamConflictKeys() {
+            const numericKeys = Object.keys(teacherExamConflicts).filter(k => k !== String(Number(k)) || typeof k === 'number');
+            // Rebuild entirely with string keys to be safe
+            const normalized = {};
+            Object.keys(teacherExamConflicts).forEach(k => {
+                const sk = String(k);
+                if (!normalized[sk]) normalized[sk] = new Set();
+                (teacherExamConflicts[k] || new Set()).forEach(name => normalized[sk].add(name));
+            });
+            teacherExamConflicts = normalized;
         }
 
         setTimeout(autoLoadFromGitHub, 300);
