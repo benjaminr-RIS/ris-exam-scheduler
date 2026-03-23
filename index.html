@@ -563,25 +563,25 @@
         let currentTab = 'IB_1';
         let examData = {
             'IB_1': { startDate: new Date('2026-04-27'), endDate: new Date('2026-05-20'), dates: [], examSlots: new Set(),
-                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, 
+                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, slotGuestProctors: {}, 
                     assignments: {}, specialAssignments: {}, manualAssignments: {}, slotMergeDown: new Set() },
             'IB_2': { startDate: new Date('2026-04-27'), endDate: new Date('2026-05-20'), dates: [], examSlots: new Set(),
-                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, 
+                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, slotGuestProctors: {}, 
                     assignments: {}, specialAssignments: {}, manualAssignments: {}, slotMergeDown: new Set() },
             'IB_SPECIAL': { startDate: new Date('2026-04-27'), endDate: new Date('2026-05-20'), dates: [], examSlots: new Set(),
-                           slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, 
+                           slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, slotGuestProctors: {}, 
                            assignments: {}, specialAssignments: {}, manualAssignments: {}, slotMergeDown: new Set() },
             'AP-1': { startDate: new Date('2026-05-05'), endDate: new Date('2026-05-23'), dates: [], examSlots: new Set(),
-                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, 
+                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, slotGuestProctors: {}, 
                     assignments: {}, specialAssignments: {}, manualAssignments: {}, slotMergeDown: new Set() },
             'AP-2': { startDate: new Date('2026-05-05'), endDate: new Date('2026-05-23'), dates: [], examSlots: new Set(),
-                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, 
+                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, slotGuestProctors: {}, 
                     assignments: {}, specialAssignments: {}, manualAssignments: {}, slotMergeDown: new Set() },
             'AP-3': { startDate: new Date('2026-05-05'), endDate: new Date('2026-05-23'), dates: [], examSlots: new Set(),
-                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, 
+                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, slotGuestProctors: {}, 
                     assignments: {}, specialAssignments: {}, manualAssignments: {}, slotMergeDown: new Set() },
             'AP-4': { startDate: new Date('2026-05-05'), endDate: new Date('2026-05-23'), dates: [], examSlots: new Set(),
-                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, 
+                    slotProctorCount: {}, slotExamNames: {}, slotTimes: {}, slotNotes: {}, slotGuestProctors: {}, 
                     assignments: {}, specialAssignments: {}, manualAssignments: {}, slotMergeDown: new Set() }
         };
         
@@ -823,9 +823,11 @@
                         
                         if (isExam) {
                             const hasData = !!examName; // only colour if exam name has been saved
-                            const assigned = isSpecial ? 
+                            const teacherAssigned = isSpecial ? 
                                 (data.specialAssignments[slotId] || []).filter(t => t).length :
                                 (data.assignments[slotId] || []).length;
+                            const guestAssigned = data.slotGuestProctors ? (data.slotGuestProctors[slotId] || []).length : 0;
+                            const assigned = teacherAssigned + guestAssigned;
                             
                             if (!hasData) { bgColor = '#dfe6e9'; textColor = '#7f8c8d'; } // initiated but no data yet — neutral grey
                             else if (assigned === 0) { bgColor = '#e74c3c'; textColor = 'white'; }
@@ -860,9 +862,11 @@
                                 const t = TEACHERS.find(x => x.id === id);
                                 return t ? t.name.split(' ').pop() : '?';
                             });
+                            const guestNames = data.slotGuestProctors ? (data.slotGuestProctors[slotId] || []) : [];
+                            const allProctorNames = [...assignedNames, ...guestNames.map(g => g.split(' ').pop())];
                             const endTime = data.slotEndTimes ? data.slotEndTimes[slotId] || '' : '';
                             const timeStr = (startTime || endTime) ? `${startTime}${startTime && endTime ? '–' : ''}${endTime}` : '';
-                            const proctor = assignedNames.length > 0 ? assignedNames.join(', ') : `${assignedIds.length}/${proctorCount}`;
+                            const proctor = allProctorNames.length > 0 ? allProctorNames.join(', ') : `${assignedIds.length}/${proctorCount}`;
                             html += `
                               <div style="font-size:13px;font-weight:800;opacity:0.95;letter-spacing:0.3px;text-align:center;margin-bottom:1px;">${cycleBlock}${(isWedSplit7 || isWedSplit8) ? ` <span style="font-size:11px;font-weight:600;opacity:0.85;">${isWedSplit7 ? '3–4PM' : '4PM+'}</span>` : ''}</div>
                               ${examName ? `<div style="font-size:13px;font-weight:700;line-height:1.2;text-align:center;margin-bottom:1px;word-break:break-word;">${examName}</div>` : ''}
@@ -1277,6 +1281,27 @@
                                 <label style="display: block; font-size: 13px; font-weight: 600; color: #2c3e50; margin-bottom: 8px;">Assign Teachers:</label>
                                 ${teacherDropdowns}
                             </div>
+                            <!-- Guest Proctors -->
+                            <div>
+                                <label style="display:block;font-size:13px;font-weight:600;color:#2c3e50;margin-bottom:8px;">
+                                    Guest Proctors
+                                    <span style="font-size:11px;font-weight:400;color:#7f8c8d;margin-left:4px;">(secretary, admin, volunteer…)</span>
+                                </label>
+                                <div id="guestProctorList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;">
+                                    ${(function() {
+                                        const guests = data.slotGuestProctors ? (data.slotGuestProctors[slotId] || []) : [];
+                                        if (guests.length === 0) return '';
+                                        return guests.map((g, i) => `
+                                            <div style="display:flex;gap:6px;align-items:center;">
+                                                <input type="text" class="guest-proctor-input" value="${g.replace(/"/g,'&quot;')}"
+                                                    placeholder="Full name"
+                                                    style="flex:1;padding:8px 10px;border:2px solid #ddd;border-radius:6px;font-size:13px;">
+                                                <button onclick="this.parentElement.remove()" style="padding:6px 10px;background:#e74c3c;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;flex-shrink:0;">✕</button>
+                                            </div>`).join('');
+                                    })()}
+                                </div>
+                                <button onclick="addGuestProctorRow()" style="padding:6px 12px;background:#f0f4ff;color:#3498db;border:1px solid #3498db;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">+ Add Guest</button>
+                            </div>
                         </div>
                     </div>
 
@@ -1343,6 +1368,18 @@
             container.innerHTML += dropdowns;
         }
         
+        function addGuestProctorRow() {
+            const list = document.getElementById('guestProctorList');
+            if (!list) return;
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;gap:6px;align-items:center;';
+            row.innerHTML = `<input type="text" class="guest-proctor-input" placeholder="Full name"
+                style="flex:1;padding:8px 10px;border:2px solid #ddd;border-radius:6px;font-size:13px;">
+                <button onclick="this.parentElement.remove()" style="padding:6px 10px;background:#e74c3c;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;flex-shrink:0;">✕</button>`;
+            list.appendChild(row);
+            row.querySelector('input').focus();
+        }
+
         function saveExamSlot() {
             const ctx = window.currentExamModal;
             
@@ -1383,6 +1420,12 @@
             if (notes) ctx.data.slotNotes[ctx.slotId] = notes;
             else delete ctx.data.slotNotes[ctx.slotId];
             
+            if (!ctx.data.slotGuestProctors) ctx.data.slotGuestProctors = {};
+            const guestInputs = document.querySelectorAll('#guestProctorList .guest-proctor-input');
+            const guests = Array.from(guestInputs).map(i => i.value.trim()).filter(v => v);
+            if (guests.length > 0) ctx.data.slotGuestProctors[ctx.slotId] = guests;
+            else delete ctx.data.slotGuestProctors[ctx.slotId];
+
             ctx.data.slotProctorCount[ctx.slotId] = ctx.proctorCount;
             
             const assignments = [];
@@ -3773,7 +3816,8 @@
                     if (availFrom && date < availFrom) return;
 
                     const needed = data.slotProctorCount[slotId] || 2;
-                    const assigned = (data.assignments[slotId] || []).filter(x => x).length;
+                    const assigned = (data.assignments[slotId] || []).filter(x => x).length
+                        + (data.slotGuestProctors ? (data.slotGuestProctors[slotId] || []).length : 0);
                     const spotsLeft = needed - assigned;
                     if (spotsLeft <= 0) return;
 
@@ -4923,6 +4967,7 @@
                     slotRoom:           d.slotRoom         || {},
                     slotStudents:       d.slotStudents     || {},
                     slotGenderReq:      d.slotGenderReq    || {},
+                    slotGuestProctors:  d.slotGuestProctors || {},
                     slotMergeDown:      Array.from(d.slotMergeDown || []),
                     assignments:        d.assignments,
                     specialAssignments: d.specialAssignments,
@@ -5016,6 +5061,7 @@
                 examData[type].slotRoom           = d.slotRoom         || {};
                 examData[type].slotStudents       = d.slotStudents     || {};
                 examData[type].slotGenderReq      = d.slotGenderReq    || {};
+                examData[type].slotGuestProctors  = d.slotGuestProctors || {};
                 examData[type].slotMergeDown      = new Set(d.slotMergeDown || []);
                 examData[type].assignments        = d.assignments;
                 examData[type].specialAssignments = d.specialAssignments;
