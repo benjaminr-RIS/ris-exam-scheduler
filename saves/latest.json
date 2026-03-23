@@ -3455,6 +3455,16 @@
       "Math AI HL/SL + Math AA HL/SL (Paper 2)",
       "Spanish Ab Initio / Spanish B (Paper 2 Listening)",
       "Spanish Ab Initio / Spanish B (Papers 1&2)"
+    ],
+    "22": [
+      "Physics HL (Paper 2)",
+      "Physics HL (Paper 1a/1b)",
+      "Psychology HL/SL (Paper 1)",
+      "Psychology HL/SL (Papers 2&3) + English A Lit SL",
+      "English A Lang&Lit / Lit + English B (Papers 1)",
+      "English A Lang&Lit/Lit + Lit&Perf SL (Paper 2/1)",
+      "English A Lit/Lang&Lit HL (Paper 1)",
+      "English A Lit/Lang&Lit HL (Paper 2)"
     ]
   },
   "schedulerSettings": {
