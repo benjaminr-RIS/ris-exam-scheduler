@@ -1884,11 +1884,17 @@
             autoSave();
             // Refresh the Teacher Schedule tab right panel
             refreshTeacherCardRight(teacherId);
-            // Refresh the admin conflict column
+            // Refresh the admin conflict column — preserve scroll position
             const adminConflictContainer = document.getElementById('admin-conflict-panel-' + tid);
             if (adminConflictContainer) {
                 const adminT = TEACHERS.find(x => String(x.id) === tid);
-                if (adminT) adminConflictContainer.innerHTML = buildAdminConflictColumn(adminT);
+                if (adminT) {
+                    const scrollEl = document.getElementById('adm-conflict-scroll-' + tid);
+                    const savedScroll = scrollEl ? scrollEl.scrollTop : 0;
+                    adminConflictContainer.innerHTML = buildAdminConflictColumn(adminT);
+                    const newScrollEl = document.getElementById('adm-conflict-scroll-' + tid);
+                    if (newScrollEl) newScrollEl.scrollTop = savedScroll;
+                }
             }
         }
 
@@ -1955,7 +1961,7 @@
                         ${conflictCount > 0 ? '(' + conflictCount + ')' : ''}
                     </span>
                 </div>
-                <div style="flex:1;overflow-y:auto;max-height:220px;padding-right:2px;">
+                <div id="adm-conflict-scroll-${teacher.id}" style="flex:1;overflow-y:auto;max-height:220px;padding-right:2px;">
                     ${allNames.length === 0
                         ? '<div style="font-size:11px;color:#bdc3c7;font-style:italic;">No exams yet.</div>'
                         : checkboxes}
