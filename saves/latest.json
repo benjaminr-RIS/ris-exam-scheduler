@@ -3373,6 +3373,30 @@
     },
     "38": {}
   },
+  "teacherExamConflicts": {
+    "1": [
+      "Biology HL/SL (Paper 1a/1b)",
+      "Biology HL/SL (Paper 2)",
+      "Biology SL (Paper 1a/1b)",
+      "Biology SL (Paper 2)",
+      "English A Lang&Lit / Lit + English B (Papers 1)",
+      "English A Lang&Lit/Lit + Lit&Perf SL (Paper 2/1)",
+      "English A Lit/Lang&Lit HL (Paper 1)",
+      "English A Lit/Lang&Lit HL (Paper 2)",
+      "History HL (Papers 1&2)",
+      "History HL (Paper 3)",
+      "History HL/SL (Paper 3)",
+      "History HL/SL (Papers 1&2)",
+      "Math AI HL (Paper 3)",
+      "Math AI HL + Math AA HL (Paper 3)",
+      "Math AI HL/SL (Paper 1)",
+      "Math AI HL/SL (Paper 2)",
+      "Math AI HL/SL + Math AA HL/SL (Paper 1)",
+      "Math AI HL/SL + Math AA HL/SL (Paper 2)",
+      "Spanish Ab Initio / Spanish B (Papers 1&2)",
+      "Spanish Ab Initio / Spanish B (Paper 2 Listening)"
+    ]
+  },
   "schedulerSettings": {
     "IB_1": {
       "lunch": true,
