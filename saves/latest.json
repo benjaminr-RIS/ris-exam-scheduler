@@ -1482,9 +1482,6 @@
       },
       "slotNotes": {
         "AP-1-0-0": "3:00+10=3:10h",
-        "AP-1-0-1": "",
-        "AP-1-0-2": "",
-        "AP-1-0-3": "",
         "AP-1-0-4": "2:10+10=2:20h",
         "AP-1-1-0": "2:15+10=2:25h",
         "AP-1-1-1": "",
@@ -1645,11 +1642,74 @@
         "AP-1-12-7": 23
       },
       "slotGenderReq": {},
-      "slotGuestProctors": {},
+      "slotGuestProctors": {
+        "AP-1-0-4": [
+          "Christoffer John Aquino"
+        ],
+        "AP-1-0-5": [
+          "Christoffer John Aquino"
+        ],
+        "AP-1-0-6": [
+          "Christoffer John Aquino"
+        ]
+      },
       "slotMergeDown": [],
-      "assignments": {},
-      "specialAssignments": {},
-      "manualAssignments": {}
+      "assignments": {
+        "AP-1-0-0": [
+          31,
+          23
+        ],
+        "AP-1-0-1": [
+          31,
+          23
+        ],
+        "AP-1-0-2": [
+          31,
+          23
+        ],
+        "AP-1-0-4": [
+          31
+        ],
+        "AP-1-0-6": [
+          31
+        ]
+      },
+      "specialAssignments": {
+        "AP-1-0-3": [
+          31,
+          23
+        ],
+        "AP-1-0-5": [
+          31
+        ]
+      },
+      "manualAssignments": {
+        "AP-1-0-0": [
+          31,
+          23
+        ],
+        "AP-1-0-1": [
+          31,
+          23
+        ],
+        "AP-1-0-2": [
+          31,
+          23
+        ],
+        "AP-1-0-3": [
+          31,
+          23
+        ],
+        "AP-1-0-4": [
+          31
+        ],
+        "AP-1-0-5": [
+          31
+        ],
+        "AP-1-0-6": [
+          31
+        ]
+      }
     },
     "AP-2": {
       "startDate": "2026-05-05T00:00:00.000Z",
@@ -1911,9 +1971,6 @@
       },
       "slotNotes": {
         "AP-2-0-4": "1 student\nH409\n3:15+10=3:25h\nPart 1: 1:10 standard → up to 1:45\nPart 2: 1:00 standard → up to 1:30\nStudent must use at least standard time",
-        "AP-2-0-5": "",
-        "AP-2-0-6": "",
-        "AP-2-0-7": "",
         "AP-2-1-0": "3:15+10=3:25h\nHybrid",
         "AP-2-1-1": "",
         "AP-2-1-2": "",
@@ -2058,9 +2115,36 @@
       "slotMergeDown": [
         "AP-2-7-4"
       ],
-      "assignments": {},
-      "specialAssignments": {},
-      "manualAssignments": {}
+      "assignments": {
+        "AP-2-0-4": [
+          23
+        ],
+        "AP-2-0-6": [
+          23
+        ]
+      },
+      "specialAssignments": {
+        "AP-2-0-5": [
+          23
+        ],
+        "AP-2-0-7": [
+          23
+        ]
+      },
+      "manualAssignments": {
+        "AP-2-0-4": [
+          23
+        ],
+        "AP-2-0-5": [
+          23
+        ],
+        "AP-2-0-6": [
+          23
+        ],
+        "AP-2-0-7": [
+          23
+        ]
+      }
     },
     "AP-3": {
       "startDate": "2026-05-05T00:00:00.000Z",
@@ -2338,7 +2422,7 @@
       "name": "Mr. Collin",
       "required": 4,
       "gender": "M",
-      "program": "IB",
+      "program": "AP",
       "color": "#e74c3c"
     },
     {
@@ -2394,7 +2478,7 @@
       "name": "Ms. Laura",
       "required": 14,
       "gender": "F",
-      "program": "IB",
+      "program": "Both",
       "color": "#9b59b6"
     },
     {
