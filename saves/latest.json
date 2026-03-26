@@ -2205,12 +2205,12 @@
         "AP-3-4-4": "AP Macroeconomics (Hyb.)",
         "AP-3-4-5": "AP Macroeconomics (Hyb.)",
         "AP-3-4-6": "AP Macroeconomics (Hyb.)",
-        "AP-3-12-0": "AP Statistics",
-        "AP-3-12-5": "AP Macro",
-        "AP-3-12-1": "AP Statistics",
-        "AP-3-12-2": "AP Statistics",
-        "AP-3-12-6": "AP Macro",
-        "AP-3-12-4": "AP Macro"
+        "AP-3-12-0": "AP Statistics (Make-up)",
+        "AP-3-12-5": "AP Macro (Make-up)",
+        "AP-3-12-1": "AP Statistics (Make-up)",
+        "AP-3-12-2": "AP Statistics (Make-up)",
+        "AP-3-12-6": "AP Macro (Make-up)",
+        "AP-3-12-4": "AP Macro (Make-up)"
       },
       "slotTimes": {
         "AP-3-1-0": "07:45",
@@ -2229,7 +2229,7 @@
         "AP-3-12-0": "07:45",
         "AP-3-12-5": "12:40",
         "AP-3-12-1": "08:50",
-        "AP-3-12-2": "07:45",
+        "AP-3-12-2": "09:55",
         "AP-3-12-6": "13:40",
         "AP-3-12-4": "11:45"
       },
@@ -2250,7 +2250,7 @@
         "AP-3-12-0": "08:50",
         "AP-3-12-5": "13:40",
         "AP-3-12-1": "09:55",
-        "AP-3-12-2": "08:45",
+        "AP-3-12-2": "10:55",
         "AP-3-12-6": "14:40",
         "AP-3-12-4": "12:40"
       },
